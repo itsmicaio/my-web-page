@@ -1,0 +1,41 @@
+backend:
+  name: github
+  repo: itsmicaio/my-web-page
+  branch: main
+site_url: https://caiofuzatto.com.br
+display_url: https://caiofuzatto.com.br
+publish_mode: editorial_workflow
+media_folder: "static/uploads"
+public_folder: "uploads"
+collections:
+  - name: "post"
+    label: "Post"
+    folder: "static/posts"
+    create: true
+    slug: "{{day}}-{{month}}-{{year}}-{{slug}}" # Filename template, e.g., YYYY-MM-DD-title.md
+    fields:
+      - { label: "Layout", name: "layout", widget: "hidden", default: "blog" }
+      - { label: "Título", name: "title", widget: "string" }
+      - {
+          label: "Data de publicação",
+          name: "date",
+          widget: "date",
+          format: "DD-MM-YYYY",
+        }
+      - {
+          label: "Tags",
+          name: "tags",
+          widget: "select",
+          multiple: true,
+          options:
+            [
+              "javascript",
+              "web",
+              "typescript",
+              "google-cloud",
+              "aws",
+              "aleatorio",
+            ],
+        }
+      - { label: "Capa", name: "thumbnail", widget: "image" }
+      - { label: "Texto", name: "body", widget: "markdown" }
