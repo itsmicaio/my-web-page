@@ -18,16 +18,17 @@ const IndexPage: React.FC<IProps> = ({ data }) => {
         <ul className="pl-0 w-full flex flex-col items-center">
           {posts.map((post) => (
             <li
-              key={post.node.fields.slug}
-              className="group hover:bg-gray-200 font-thin text-2xl max-w-lg mb-7 py-2 px-1"
+              key={post.node.id}
+              className="group hover:bg-gray-200 font-thin max-w-lg mb-7 py-2 px-1"
             >
               <a className="block" href={post.node.fields.slug}>
                 <div className="flex items-center">
-                  <h6 className="text-sm font-semibold group-hover:text-green">
+                  <h1 className="text-sm font-semibold group-hover:text-green">
                     {post.node.frontmatter.title}
-                  </h6>
+                  </h1>
                   {post.node.frontmatter.tags.map((tag) => (
                     <span
+                      key={`${post.node.id}-${tag}`}
                       className="text-white p-1 font-bold text-xs rounded-md mx-1 bg-red-600 group-hover:bg-black group-hover:text-white"
                       aria-label="New Badge"
                     >

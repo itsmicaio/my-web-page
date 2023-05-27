@@ -1,5 +1,5 @@
 import * as React from "react";
-import { graphql } from "gatsby";
+import { HeadFC, graphql } from "gatsby";
 import { Post } from "../entities/Post";
 
 type IProps = {
@@ -20,7 +20,7 @@ const PostTemplate: React.FC<IProps> = ({ data }) => {
       </header>
       <main>
         <article className="pl-0 w-full flex flex-col items-center">
-          <div className="font-thin text-2xl max-w-lg mb-7 py-2 px-1">
+          <div className="font-thin max-w-lg mb-7 py-2 px-1">
             <p className="text-sm mt-2 mb-0 leading-5">{frontmatter.date}</p>
             <h1 className="text-sm font-semibold">{frontmatter.title}</h1>
             <div
@@ -52,3 +52,10 @@ export const query = graphql`
     }
   }
 `;
+
+export const Head = ({ data }: IProps) => {
+  const { mdx } = data;
+  const { frontmatter } = mdx;
+
+  return <title>{frontmatter.title}</title>;
+};
