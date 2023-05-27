@@ -1,5 +1,5 @@
 import * as React from "react";
-import { HeadFC, graphql } from "gatsby";
+import { graphql } from "gatsby";
 import { Post } from "../entities/Post";
 
 type IProps = {
@@ -48,6 +48,7 @@ export const query = graphql`
       fields {
         slug
       }
+      excerpt(pruneLength: 200)
       body
     }
   }
@@ -55,7 +56,13 @@ export const query = graphql`
 
 export const Head = ({ data }: IProps) => {
   const { mdx } = data;
-  const { frontmatter } = mdx;
+  const { frontmatter, excerpt } = mdx;
 
-  return <title>{frontmatter.title}</title>;
+  return (
+    <>
+      <html lang="pt-BR" />
+      <title>{frontmatter.title}</title>
+      <meta name="description" content={excerpt}></meta>
+    </>
+  );
 };

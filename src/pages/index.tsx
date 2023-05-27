@@ -83,4 +83,13 @@ export const query = graphql`
   }
 `;
 
-export const Head: HeadFC = () => <title>Home | Caio Fuzatto</title>;
+export const Head: HeadFC = () => (
+  <>
+    <html lang="pt-BR" />
+    <title>Home | Caio Fuzatto</title>
+    <meta
+      name="description"
+      content="Minha página web. Aqui posto um diário de conhecimento técnico. Também tem um pouco sobre minha vida profissional."
+    ></meta>
+  </>
+);
