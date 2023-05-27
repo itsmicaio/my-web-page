@@ -64,21 +64,5 @@ exports.createPages = ({ graphql, actions }) => {
         },
       });
     });
-
-    const postsPerPage = 10;
-    const numPages = Math.ceil(posts.length / postsPerPage);
-
-    Array.from({ length: numPages }).forEach((_, index) => {
-      createPage({
-        path: index === 0 ? `/` : `/post/${index + 1}`,
-        component: path.resolve(`./src/templates/post.tsx`),
-        context: {
-          limit: postsPerPage,
-          skip: index * postsPerPage,
-          numPages,
-          currentPage: index + 1,
-        },
-      });
-    });
   });
 };
