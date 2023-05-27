@@ -49,35 +49,35 @@ const links = [
 
 const IndexPage: React.FC<PageProps> = () => {
   return (
-    <main className="p-16 text-gray-600 font-serif" >
-      <h1
-        className="mt-0 mb-16 max-w-xs"
-      >
-        Caio Fuzatto Daily Notes
-      </h1>
-      <ul className="pl-0 mb-24">
+    <main className="text-gray-600 font-serif">
+      <header className="bg-green w-full flex flex-col items-center mb-7">
+        <h1 className="my-8 max-w-xs text-white text-2xl">Caio Fuzatto</h1>
+      </header>
+      <ul className="pl-0 w-full flex flex-col items-center">
         {links.map((link) => (
           <li
             key={link.url}
-            className="font-thin text-2xl max-w-lg mb-7"
+            className="group hover:bg-gray-200 font-thin text-2xl max-w-lg mb-7 py-2 px-1"
           >
-            <span>
-              <a
-                className="text-sm"
-                href={`${link.url}?utm_source=starter&utm_medium=start-page&utm_campaign=minimal-starter-ts`}
-              >
-                {link.text}
-              </a>
-              {link.badge && (
-                <span
-                  className="text-white p-1 font-bold text-xs rounded-md mx-1 bg-red-600"
-                  aria-label="New Badge"
-                >
-                  NEW!
-                </span>
-              )}
-              <p className="text-sm mt-2 mb-0 leading-5">{link.description}</p>
-            </span>
+            <a
+              className="block"
+              href={`${link.url}?utm_source=starter&utm_medium=start-page&utm_campaign=minimal-starter-ts`}
+            >
+              <div className="flex items-center">
+                <h6 className="text-sm font-semibold group-hover:text-green">{link.text}</h6>
+                {link.badge && (
+                  <span
+                    className="text-white p-1 font-bold text-xs rounded-md mx-1 bg-red-600 group-hover:bg-black group-hover:text-white"
+                    aria-label="New Badge"
+                  >
+                    NEW!
+                  </span>
+                )}
+              </div>
+              <p className="text-sm mt-2 mb-0 leading-5 group-hover:text-green">
+                {link.description}
+              </p>
+            </a>
           </li>
         ))}
       </ul>
