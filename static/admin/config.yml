@@ -35,6 +35,9 @@ collections:
               "google-cloud",
               "aws",
               "aleatorio",
+              "frontend",
+              "backend",
+              "tech"
             ],
         }
       - { label: "Capa", name: "thumbnail", widget: "image" }

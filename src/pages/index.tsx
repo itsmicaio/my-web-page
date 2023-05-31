@@ -1,6 +1,7 @@
 import * as React from "react";
 import { HeadFC, graphql } from "gatsby";
 import { Posts } from "../entities/Post";
+import ListTags from "../components/ListTags";
 
 type IProps = { data: Posts };
 
@@ -26,15 +27,7 @@ const IndexPage: React.FC<IProps> = ({ data }) => {
                   <h1 className="text-sm font-semibold group-hover:text-green">
                     {post.node.frontmatter.title}
                   </h1>
-                  {post.node.frontmatter.tags.map((tag) => (
-                    <span
-                      key={`${post.node.id}-${tag}`}
-                      className="text-white p-1 font-bold text-xs rounded-md mx-1 bg-red-600 group-hover:bg-black group-hover:text-white"
-                      aria-label="New Badge"
-                    >
-                      {tag}
-                    </span>
-                  ))}
+                  <ListTags tags={post.node.frontmatter.tags} maxTags={3} />
                 </div>
                 <p className="text-sm mt-2 mb-0 leading-5 group-hover:text-green">
                   {post.node.excerpt}

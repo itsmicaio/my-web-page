@@ -1,3 +1,5 @@
+import { Tag } from "./Tag";
+
 export interface Post {
   fields: {
     slug: string;
@@ -6,7 +8,7 @@ export interface Post {
   excerpt: string;
   frontmatter: {
     date: string;
-    tags: string[];
+    tags: Tag[];
     thumbnail: string;
     title: string;
   };
