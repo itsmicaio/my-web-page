@@ -1,5 +1,6 @@
 const path = require("path");
 const { createFilePath } = require(`gatsby-source-filesystem`);
+const postTemplate = path.resolve(`./src/templates/post.tsx`)
 
 exports.onCreateNode = ({ node, getNode, actions }) => {
   const { createNodeField } = actions;
@@ -35,6 +36,9 @@ exports.createPages = ({ graphql, actions }) => {
               thumbnail
               title
             }
+            internal {
+              contentFilePath
+            }
             id
           }
           next {
@@ -55,7 +59,7 @@ exports.createPages = ({ graphql, actions }) => {
     posts.forEach(({ node, next, previous }) => {
       createPage({
         path: node.fields.slug,
-        component: path.resolve(`./src/templates/post.tsx`),
+        component: `${postTemplate}?__contentFilePath=${node.internal.contentFilePath}`,
         context: {
           id: node.id,
           slug: node.fields.slug,

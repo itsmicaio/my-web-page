@@ -1,16 +1,19 @@
 import * as React from "react";
 import { graphql } from "gatsby";
 import { Post } from "../entities/Post";
+import ListTags from "../components/ListTags";
+import { MDXProvider } from "@mdx-js/react";
 
 type IProps = {
   data: {
     mdx: Post;
   };
+  children: any
 };
 
-const PostTemplate: React.FC<IProps> = ({ data }) => {
+const PostTemplate: React.FC<IProps> = ({ data, children }) => {
   const { mdx } = data;
-  const { frontmatter, body } = mdx;
+  const { frontmatter } = mdx;
   return (
     <div className="text-gray-600 font-serif">
       <header className="bg-green w-full flex flex-col items-center mb-7">
@@ -23,10 +26,11 @@ const PostTemplate: React.FC<IProps> = ({ data }) => {
           <div className="font-thin max-w-lg mb-7 py-2 px-1">
             <p className="text-sm mt-2 mb-0 leading-5">{frontmatter.date}</p>
             <h1 className="text-sm font-semibold">{frontmatter.title}</h1>
-            <div
-              className="text-sm mt-2 mb-0 leading-5"
-              dangerouslySetInnerHTML={{ __html: body }}
-            />
+
+            <MDXProvider>
+              <div className="text-sm mt-2 mb-5 leading-5">{children}</div>
+            </MDXProvider>
+            <ListTags tags={frontmatter.tags} />
           </div>
         </article>
       </main>
