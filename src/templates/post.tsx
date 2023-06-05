@@ -25,10 +25,10 @@ const PostTemplate: React.FC<IProps> = ({ data, children }) => {
         <article className="pl-0 w-full flex flex-col items-center">
           <div className="font-thin max-w-lg mb-7 py-2 px-1">
             <p className="text-sm mt-2 mb-0 leading-5">{frontmatter.date}</p>
-            <h1 className="text-sm font-semibold">{frontmatter.title}</h1>
+            <h1 className="font-bold text-lg ">{frontmatter.title}</h1>
 
             <MDXProvider>
-              <div className="text-sm mt-2 mb-5 leading-5">{children}</div>
+              <div className="text-sm mt-2 mb-5 leading-5 mdx">{children}</div>
             </MDXProvider>
             <ListTags tags={frontmatter.tags} classNames="mt-2" />
           </div>
