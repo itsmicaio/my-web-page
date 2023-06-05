@@ -27,7 +27,7 @@ const IndexPage: React.FC<IProps> = ({ data }) => {
                   <h1 className="text-sm font-semibold group-hover:text-green">
                     {post.node.frontmatter.title}
                   </h1>
-                  <ListTags tags={post.node.frontmatter.tags} maxTags={3} />
+                  <ListTags tags={post.node.frontmatter.tags} maxTags={3} classNames="ml-2"/>
                 </div>
                 <p className="text-sm mt-2 mb-0 leading-5 group-hover:text-green">
                   {post.node.excerpt}

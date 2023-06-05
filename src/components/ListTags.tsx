@@ -4,9 +4,10 @@ import { Tag } from "../entities/Tag";
 type IProps = {
   tags: Tag[];
   maxTags?: number;
+  classNames?: string;
 };
 
-const ListTags = ({ tags, maxTags }: IProps) => {
+const ListTags = ({ tags, maxTags, classNames }: IProps) => {
   const TagClasses = {
     aleatorio: {
       name: "Aleatório",
@@ -52,11 +53,11 @@ const ListTags = ({ tags, maxTags }: IProps) => {
     <span>+{tags.length - maxTags}</span>
   );
   return (
-    <div className="flex items-center">
+    <div className={`flex items-center gap-2 ${classNames}`}>
       {showTags.map((tag) => (
         <span
           key={tag}
-          className={`p-1 font-bold text-xs rounded-md mx-1 group-hover:bg-black group-hover:text-white group-hover:border-black ${TagClasses[tag].classes}`}
+          className={`font-bold text-xs rounded-md p-1 group-hover:bg-black group-hover:text-white group-hover:border-black ${TagClasses[tag].classes}`}
           aria-label={`Tag ${tag}`}
         >
           {TagClasses[tag].name}

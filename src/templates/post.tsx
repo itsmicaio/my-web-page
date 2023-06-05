@@ -30,7 +30,7 @@ const PostTemplate: React.FC<IProps> = ({ data, children }) => {
             <MDXProvider>
               <div className="text-sm mt-2 mb-5 leading-5">{children}</div>
             </MDXProvider>
-            <ListTags tags={frontmatter.tags} />
+            <ListTags tags={frontmatter.tags} classNames="mt-2" />
           </div>
         </article>
       </main>
