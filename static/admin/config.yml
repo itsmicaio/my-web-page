@@ -12,7 +12,7 @@ collections:
     label: "Post"
     folder: "static/posts"
     create: true
-    slug: "{{day}}-{{month}}-{{year}}-{{slug}}" # Filename template, e.g., YYYY-MM-DD-title.md
+    slug: "{{year}}-{{month}}--{{day}}--{{slug}}" # Filename template, e.g., YYYY-MM-DD-title.md
     fields:
       - { label: "Layout", name: "layout", widget: "hidden", default: "blog" }
       - { label: "Título", name: "title", widget: "string" }
@@ -20,7 +20,7 @@ collections:
           label: "Data de publicação",
           name: "date",
           widget: "date",
-          format: "DD-MM-YYYY",
+          format: "YYYY-MM-HH",
         }
       - {
           label: "Tags",
