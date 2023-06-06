@@ -10,6 +10,7 @@ const config: GatsbyConfig = {
   // Learn more at: https://gatsby.dev/graphql-typegen
   graphqlTypegen: true,
   plugins: [
+    "gatsby-plugin-netlify",
     "gatsby-plugin-netlify-cms",
     "gatsby-plugin-postcss",
     "gatsby-plugin-image",
@@ -52,7 +53,7 @@ const config: GatsbyConfig = {
         name: `uploads`,
         path: `${__dirname}/static/uploads`,
       },
-    }
+    },
   ],
 };
 
