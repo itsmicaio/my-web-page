@@ -40,11 +40,15 @@ const ListTags = ({ tags, maxTags, classNames }: IProps) => {
     },
     backend: {
       name: "BackEnd",
-      classes: "text-white bg-lime-600",
+      classes: "text-white bg-lime-900",
     },
     tech: {
       name: "Tech",
       classes: "text-white bg-indigo-300",
+    },
+    nodejs: {
+      name: "NodeJS",
+      classes: "text-zinc-800 bg-lime-500",
     },
   };
 

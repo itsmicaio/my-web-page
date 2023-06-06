@@ -7,4 +7,5 @@ export type Tag =
   | "aleatorio"
   | "frontend"
   | "backend"
-  | "tech";
+  | "tech"
+  | "nodejs";

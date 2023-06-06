@@ -37,7 +37,8 @@ collections:
               "aleatorio",
               "frontend",
               "backend",
-              "tech"
+              "tech",
+              "nodejs"
             ],
         }
       - { label: "Capa", name: "thumbnail", widget: "image" }
