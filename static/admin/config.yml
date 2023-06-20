@@ -41,5 +41,4 @@ collections:
               "nodejs"
             ],
         }
-      - { label: "Capa", name: "thumbnail", widget: "image" }
       - { label: "Texto", name: "body", widget: "markdown" }
