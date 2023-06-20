@@ -46,7 +46,6 @@ export const query = graphql`
       frontmatter {
         date
         tags
-        thumbnail
         title
       }
       fields {

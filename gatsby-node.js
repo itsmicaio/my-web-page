@@ -33,7 +33,6 @@ exports.createPages = ({ graphql, actions }) => {
             frontmatter {
               date
               tags
-              thumbnail
               title
             }
             internal {

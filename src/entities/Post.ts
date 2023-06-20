@@ -9,7 +9,6 @@ export interface Post {
   frontmatter: {
     date: string;
     tags: Tag[];
-    thumbnail: string;
     title: string;
   };
   id: string;
