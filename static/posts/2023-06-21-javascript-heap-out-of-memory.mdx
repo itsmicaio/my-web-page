@@ -1,0 +1,40 @@
+---
+layout: blog
+title: "Javascript Heap Out of Memory"
+date: 2023-06-21
+tags:
+  - nodejs
+---
+Hoje me deparei com o terrível e abominável erro de Javascript Heap Out of Memory. 
+
+## O que é isso? 
+Bom, é um erro que ocorre quando o NodeJS tenta alocar mais memória do que o permitido. 
+O NodeJS tem um limite de memória que pode ser alocado, e quando esse limite é atingido, o erro é lançado.
+Atualmente o limite de memória padrão do NodeJS é de 512MB.
+
+## Como resolver?
+Basicamente você resolve esse problema aumentando o limite de memória que o NodeJS pode alocar, utilizando o parâmetro `--max-old-space-size` na hora de executar o seu script.
+
+Exemplo: 
+```bash
+node --max-old-space-size=4096 index.js
+```
+
+Você tambem pode exportar a variável de ambiente `NODE_OPTIONS` com o valor `--max-old-space-size=4096` e executar o seu script normalmente.
+
+Exemplo: 
+```bash
+export NODE_OPTIONS="--max-old-space-size=4096"
+node index.js
+```
+
+E você também pode definir o limite de memória nos seus scripts no `package.json`.
+
+Exemplo: 
+```json
+{
+  "scripts": {
+    "start": "node --max-old-space-size=4096 index.js"
+  }
+}
+```
