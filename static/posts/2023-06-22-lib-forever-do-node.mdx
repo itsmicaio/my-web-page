@@ -1,0 +1,20 @@
+---
+layout: blog
+title: "Lib FOREVER do Node"
+date: 2023-06-22
+tags:
+  - nodejs
+---
+Bom, eu estava seguindo um tutorial para conseguir dar [deploy de um app NodeJS usando o AWS Lightsail](https://akshaykrisonz.medium.com/deploy-nodejs-app-in-aws-lightsail-9ba75332a89c) e me deparei com o comando `forever` que eu não conhecia.
+
+## O que é o comando FOREVER?
+O comando `forever` é um utilitário de linha de comando que permite que você execute scripts continuamente (ou seja, para sempre). 
+Isso é muito útil para um servidor NodeJS, pois você não precisa ficar executando o comando `node <nome-do-arquivo.js>` toda vez que o servidor for reiniciado.
+Ele é um [módulo do NodeJS](https://www.npmjs.com/package/forever) e pode ser instalado globalmente usando o comando `npm install forever -g`.
+
+## Como usar o comando FOREVER?
+Para usar o comando `forever` é bem simples, basta executar o comando `forever start <nome-do-arquivo.js>` e ele irá executar o arquivo em questão. 
+Caso você queira parar a execução do arquivo, basta executar o comando `forever stop <nome-do-arquivo.js>`.
+
+Você também pode utilizar o parâmetro `-c` para executar o arquivo com o comando `node` e o parâmetro `-w` para que o arquivo seja executado novamente caso ele seja alterado.
+Exemplo: `forever start -c "node" -w <nome-do-arquivo.js>`
