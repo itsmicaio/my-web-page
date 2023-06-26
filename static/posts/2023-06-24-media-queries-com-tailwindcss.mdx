@@ -1,0 +1,32 @@
+---
+layout: blog
+title: "Media Queries com TailwindCSS"
+date: 2023-06-22
+tags:
+  - frontend
+---
+
+Estou usando TailwindCSS em um side project, inclusive neste site também.
+Hoje aprendi como fazer media query com [TailwindCSS](https://tailwindcss.com), e é bem simples.
+
+Aqui temos um exemplo de media query em CSS, esse exemplo exibe o elemento apenas em telas menores que 768px:
+```css
+.container {
+  display: block;
+}
+
+@media (min-width: 768px) {
+  .container {
+    display: none;
+  }
+}
+```
+
+Agora vamos ver como fazer a mesma coisa com TailwindCSS:
+```html
+<div class="block md:hidden">
+  <!-- ... -->
+</div>
+```
+Basicamente o TailwindCSS utiliza o mesmo conceito de media query do CSS, porém com classes CSS.
+Você pode ver os breakpoints (sm, md, lg e etc...) na [documentação do TailwindCSS](https://tailwindcss.com/docs/responsive-design)
