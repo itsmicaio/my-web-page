@@ -1,0 +1,27 @@
+---
+layout: blog
+title: "Hot n' Code: Frontend"
+date: 2023-06-26
+tags:
+  - frontend
+---
+Hoje foi o primeiro dia do [Hot n' Code Conference](https://campaign.hotmart.com/hotncode-conference) e hoje a trilha é especial de frontend. Vou deixar aqui pontos e tecnologias interessantes que anotei das palestras.
+
+## AMPLIFY
+[Amplify](https://aws.amazon.com/pt/amplify/) é um framework para desenvolvimento de aplicações serverless. Ele é composto por 3 partes:
+- Amplify CLI: CLI para criação de recursos na AWS
+- Amplify Libraries: Bibliotecas para acesso aos recursos criados
+- Amplify Console: Console para gerenciamento dos recursos
+
+## S3 INTELLIGENT TIERING
+O [S3 Intelligent Tiering](https://aws.amazon.com/s3/storage-classes/intelligent-tiering/) é uma forma de armazenamento do S3 que faz a transição automática de objetos entre as classes de armazenamento do S3 (Standard, Standard IA e Glacier) de acordo com a frequência de acesso aos objetos. Essa transição é feita de forma automática e não é cobrada.
+
+## REACT VIRTUALIZED
+O React Virtualized é uma biblioteca para renderização de listas grandes de forma performática. Ele utiliza o conceito de windowing, que é a renderização apenas dos itens que estão visíveis na tela.
+Essa técnica é bem utilizada ja no mobile, com o [FlatList](https://reactnative.dev/docs/flatlist) do React Native, por exemplo.
+
+## LIGHTHOUSE CI
+O [Lighthouse CI](https://github.com/GoogleChrome/lighthouse-ci) é uma ferramenta para avaliação de performance de aplicações web. Ele pode ser utilizado de forma automatizada em pipelines de CI/CD para garantir que a performance da aplicação não seja degradada.
+
+## FUGU API
+O [Fugu API](https://developers.google.com/learn/pathways/fugu-apis) é uma API que permite o acesso a recursos nativos do browser, como por exemplo o acesso a câmera, microfone, etc. Essa API ainda está em desenvolvimento e não é suportada por todos os browsers.
