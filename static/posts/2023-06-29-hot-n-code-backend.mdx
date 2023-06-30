@@ -1,0 +1,43 @@
+---
+layout: blog
+title: "Hot n' Code: Data And Artificial Intelligence"
+date: 2023-06-26
+tags:
+  - backend
+---
+Estou no último dia do [Hot n' Code](https://campaign.hotmart.com/hotncode-conference) e hoje a trilha é sobre Backend. Confesso que estava muito ansioso para esse dia em específico, pois é a área que eu mais gosto e que mais me identifico. Vamos lá!
+
+## NodeJS Event Loop
+O [NodeJS Event Loop](https://nodejs.org/en/docs/guides/event-loop-timers-and-nextt) é o que permite que o Node.js execute operações de I/O sem bloqueio - apesar de o JavaScript ser single-threaded - descarregando operações para o kernel do sistema sempre que possível.
+
+## Trace
+É um conjunto de eventos que ocorrem em uma aplicação. É possível ter um trace de uma requisição HTTP, por exemplo.
+Aqui podemos referenciar o `error stack trace` que é o conjunto de eventos que ocorreram até o erro acontecer.
+
+## OpenTelemetry
+O [OpenTelemetry](https://opentelemetry.io/) é uma coleção de ferramentas, APIs e SDKs que permitem a criação de traces e métricas para aplicações.
+Ela tem integração com vários frameworks e libs, como por exemplo: Spring, ASP.NET Core, Express, Quarkus.
+
+## Lambda "por debaixo do capo"
+- MICRO VM
+- Concorrencia
+
+## Reduzir custos de Lambdas
+1. Otimizar o pacote
+2. Pré provisionar lambda
+3. Pré privisionar dinâmicamente (application auto-scaling)
+4. Criar objetos fora do handler (diminui o tempo de inicialização / cold start)
+5. Testar a lambda com CPU diferente para calcular o custo GBxsecond (Lambda Power Tuning, AWS Computer Optimize)
+6. Sempre (que possível) utilizar o chip Gravtion2 da Amazon
+
+## Amazon CodeGuru
+O [AWS CodeGuru](https://aws.amazon.com/pt/codeguru/) é um serviço que utiliza Machine Learning para fazer revisão do código, análisando vulnerabilidades e análisando as linhas mais caras da aplicação.
+
+## AWS X-Ray
+O serviço [AWS XRay](https://aws.amazon.com/pt/xray/) permite fazer o trace de uma aplicação, desde o request até o response. É possível ver o tempo de cada requisição, o tempo de cada função, o tempo de cada requisição HTTP, etc.
+
+## Cache
+- Arquiteturas de cache: Embedded, Sidecar, Distributed
+- Algoritmos de substituição de cache: LRU, LFU, FIFO
+- Padrões de escrita de cache: Write Through, Write Back, Lazy Loading
+- Limpeza do cache: Rotina, Trigger, Time to Live, Deploy
