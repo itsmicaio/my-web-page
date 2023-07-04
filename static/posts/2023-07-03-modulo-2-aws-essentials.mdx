@@ -1,0 +1,40 @@
+---
+layout: blog
+title: "AWS Essentials - Módulo 2 pt. 1"
+date: 2023-06-19
+tags:
+  - aws
+---
+Após uma semana de Hot n' Code, estou eu aqui, voltando para os estudos da tão sonhada certificação da AWS.
+
+Vou dividir esse módulo em 2, esse primeiro post vai ser sobre [AWS EC2](https://aws.amazon.com/ec2/) e o segundo sobre Load Balancing, mensageria e filas. Bora lá?
+
+## Basicão da EC2
+Isso aqui eu já tinha certa noção, mas é sempre bom relembrar.
+- A EC2 utiliza tecnologia de virtualização para fornecer instâncias virtuais para os clientes.
+- Você pode configurar o tipo de instância que você quer, como por exemplo, a quantidade de CPU, memória, armazenamento e rede. 
+
+## Tipo de instâncias EC2
+Ja faz muito tempo que eu mexo com EC2 e essa é a primeira vez que vejo sobre os tipos delas.
+
+- General Purpose instances: São instâncias que tem CPU, memória e rede balanceados. São boas para aplicações que precisam de um balanceamento entre CPU e memória, como por exemplo, servidores web e bancos de dados pequenos.
+- Compute Optimized instances: São instâncias que tem um alto poder de computação, mas com um custo maior. Útil para servidores de processamento de dados e servidores de alta performance.
+- Memory Optimized instances: São instâncias que tem um alto poder de memória, mas com um custo maior. Útil para servidores de cache e bancos de dados grandes.
+- Storage Optimized instances: São são projetados para cargas de trabalho que exigem acesso sequencial de leitura e gravação a grandes conjuntos de dados no armazenamento local. Útil para bancos de dados de alto desempenho e data warehouses.
+- Accelerated Computing instances: São instâncias que usam hardware de computação especializado para realizar funções de computação vetorial e de ponto flutuante. Útil para aprendizado de máquina, computação de alto desempenho e processamento de dados gráficos.
+
+## Formas de pagamento
+Apesar de estarmos falando de pagamento, aqui temos alguns pontos legais sobre AWS e EC2.
+
+- On-demand: Esse é o padrão, você paga por hora ou por segundo de uso, sem nenhum compromisso de longo prazo ou pagamento antecipado.
+- Savings Plans: Você faz um compromisso de uso de um ano ou três anos, para receber um desconto de até 72% em relação ao On-demand.
+- Reserved Instances: Esse modelo é bem semelhante ao Savings Plans, porém, pode chegar a um desconto de até 75%. A diferença aqui é que você fica limitado a configuração que você escolheu, não podendo alterar o tipo de instância por exemplo.
+- Spot Instances: Você pode dar um lance para usar instâncias que estão ociosas, podendo chegar a um desconto de até 90%. Porém, você pode perder a instância a qualquer momento, caso alguém de um lance maior que o seu.
+- Dedicated Hosts: Você pode alugar um servidor físico dedicado para você, com um desconto de até 70%. Útil para quem tem licenças de software que não podem ser usadas em nuvem.
+
+## Lidando com escalabilidade
+Para EC2 temos o serviço [Amazon EC2 Auto Scaling](https://aws.amazon.com/ec2/autoscaling/), que é um serviço que monitora suas aplicações e automaticamente ajusta a capacidade para manter um desempenho constante e previsível, mesmo com variações de tráfego. Temos duas abordagens possíveis:
+- Escalabilidade dinâmica: Você define um mínimo e um máximo de instâncias, e o Auto Scaling vai ajustar a quantidade de instâncias de acordo com a demanda.
+- Escalabilidade preditiva: Você define um mínimo e um máximo de instâncias, e o Auto Scaling vai ajustar a quantidade de instâncias de acordo com a demanda, porém, você pode definir um horário para aumentar ou diminuir a quantidade de instâncias, por exemplo, aumentar a quantidade de instâncias em horário de pico.
+
+Aproveite para ver o [primeiro post](/post/modulo-1-aws-essentials/), onde falo sobre os serviços básicos da AWS.
