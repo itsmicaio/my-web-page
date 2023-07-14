@@ -1,0 +1,44 @@
+---
+layout: blog
+title: "AWS Essentials - Módulo 2 pt. 2"
+date: 2023-07-13
+tags:
+  - aws
+---
+
+E vamos lá pra segunda parte do módulo 2 do curso. Hoje vamos ver sobre Load Balancing, mensageria e filas. Bora lá?
+
+## Elastic Load Balancing
+
+O [ELB](https://aws.amazon.com/elasticloadbalancing/) é um serviço que distribui o tráfego entre instâncias EC2. Ele é capaz de distribuir o tráfego entre várias zonas de disponibilidade, e também entre várias regiões. Ele também é capaz de detectar instâncias que estão com problemas e parar de enviar tráfego para elas.
+
+No [post da parte 1](/post/modulo-2-aws-essentials/) eu falei sobre o [EC2 Auto Scaling](https://aws.amazon.com/ec2/autoscaling/), que é um serviço que permite que você crie grupos de instâncias EC2 que são escalados automaticamente. O ELB é um serviço que trabalha em conjunto com o Auto Scaling, pois ele é capaz de detectar quando uma nova instância é criada e adicioná-la ao grupo de instâncias que ele gerencia.
+
+## Amazon Simple Notification Service
+
+O [SNS](https://aws.amazon.com/sns/) é um serviço de mensageria que permite que você envie mensagens para vários destinos, como e-mail, SMS, HTTP requests, Push Notification, AWS Lambdas etc.
+Ele também permite que você crie tópicos, que são canais de comunicação entre os serviços da AWS. Por exemplo, você pode criar um tópico para receber notificações de um bucket S3, e sempre que um arquivo for adicionado ao bucket, uma mensagem será enviada para o tópico.
+Funciona com publish/subscribe, ou seja, você publica uma mensagem em um tópico e todos os serviços que estão inscritos nesse tópico recebem a mensagem.
+
+## Amazon Simple Queue Service
+
+O [SQS](https://aws.amazon.com/sqs/) é um serviço de filas que permite que você envie, armazene e receba mensagens entre componentes de software. Ele é um serviço totalmente gerenciado, ou seja, você não precisa se preocupar com provisionamento, configuração ou manutenção de infraestrutura. Ele também é capaz de escalar automaticamente para atender a demanda de mensagens.
+
+# Bônus
+
+O modulo ainda trás uma última aula com uma introdução a Serverless computing e alguns serviços serverless da AWS.
+
+## Serverless computing
+
+Serverless computing é um modelo de execução de código onde o provedor de serviços em nuvem é responsável por executar um fragmento de código, de forma que o desenvolvedor não precisa se preocupar com provisionamento ou gerenciamento de infraestrutura. O código é executado em um ambiente isolado, e o provedor de serviços em nuvem é responsável por escalar automaticamente o ambiente de execução para atender a demanda de execução do código.
+
+## AWS Lambda
+
+O [AWS Lambda](https://aws.amazon.com/lambda/) é um serviço serverless que permite que você execute código sem provisionar ou gerenciar servidores. Ele é capaz de escalar automaticamente para atender a demanda de execução do código. Ele também é capaz de executar código em resposta a eventos, como por exemplo, quando um arquivo é adicionado a um bucket S3, ou quando uma mensagem é enviada para um tópico SNS.
+
+## Containers
+
+Containers são um tipo de virtualização que permite que você empacote o código e suas dependências em um pacote chamado container. O container é executado em um ambiente isolado, e é capaz de executar em qualquer ambiente que tenha um container engine instalado. O container engine é responsável por executar o container e prover os recursos necessários para que ele funcione.
+O curso cita o [Amazon Elastic Container Service](https://aws.amazon.com/ecs/), [Amazon Elastic Kubernetes Service](https://aws.amazon.com/eks/) e o [AWS Fargate](https://aws.amazon.com/fargate/) como serviços para você rodar containers e kubernets na sua AWS.
+
+Aproveite para ver a [primeiro parte](/post/modulo-2-aws-essentials/), onde aprendi sobre muito sobre EC2.
