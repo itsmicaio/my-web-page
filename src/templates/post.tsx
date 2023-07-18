@@ -1,14 +1,14 @@
 import * as React from "react";
 import { graphql } from "gatsby";
 import { Post } from "../entities/Post";
-import ListTags from "../components/ListTags";
+import ListTags from "../components/list-tags";
 import { MDXProvider } from "@mdx-js/react";
 
 type IProps = {
   data: {
     mdx: Post;
   };
-  children: any
+  children: any;
 };
 
 const PostTemplate: React.FC<IProps> = ({ data, children }) => {
