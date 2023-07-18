@@ -1,0 +1,46 @@
+---
+layout: blog
+title: "AWS Essentials - Módulo 3"
+date: 2023-07-18
+tags:
+  - aws
+---
+
+É dia de mais uma aula do curso preparatório para certificação AWS. Hoje vamos aprender sobre a infraestrutura global da AWS.
+
+## Regions
+A AWS é composta por várias regiões geográficas, cada uma delas com pelo menos duas zonas de disponibilidade. Cada região é composta por data centers que são interconectados por redes de baixa latência e alta velocidade. As regiões são independentes, ou seja, uma região pode ficar indisponível sem afetar as outras.
+Seus dados não são compartilhado entre as regiões, a não ser que você faça isso explicitamente.
+
+## Como escolher uma região
+O instrutor cita 4 fatores que devem ser levados em consideração na hora de escolher uma região:
+- Compliance: Alguns países possuem leis que exigem que os dados fiquem armazenados no país. Nesse caso, você deve escolher uma região que atenda a essas exigências, sem levar em consideração as demais.
+- Proximidade: Quanto mais próximo do usuário, menor a latência. Se você tem um público alvo em uma região específica, é interessante que você escolha uma região próxima a esse público.
+- Disponibilidade de serviços: Nem todos os serviços da AWS estão disponíveis em todas as regiões, isso deve ser levado em consideração na hora de escolher uma região.
+- Custo: O custo dos serviços varia de região para região, então é interessante que você escolha uma região que tenha um custo mais baixo. Por exemplo, São Paulo pode ser 50% mais caro que Ohio.
+
+## Availability Zones
+As zonas de disponibilidade são data centers separados fisicamente dentro de uma região. 
+Elas estão localizadas a dezenas de quilômetros de distância umas das outras. Isso é sufiente para manter a baixa latência e alta velocidade entre elas, mas longe o suficiente para que um desastre natural não afete todas as zonas de disponibilidade ao mesmo tempo.
+
+Alguns serviços da AWS são de escopo regional, o que significa que ele já vai ser multi AZ e você não terá que se preocupar com isso. Já outros, como a EC2 e o RDS, são de escopo de zona de disponibilidade, ou seja, você deve escolher em qual zona de disponibilidade você quer que o serviço seja executado.
+
+## Edge Locations
+Uma Edge Location é um data center que fica mais próximo do usuário final e são independentes das regiões. Elas são usadas pelo Amazon Cloudfront para armazenar em cache conteúdos estáticos, como imagens, vídeos e arquivos.
+
+## AWS Outposts
+O [AWS Outposts](https://aws.amazon.com/outposts/) é um serviço que permite que você provisione recursos da AWS em seu data center. Ele é composto por racks que contém servidores, storage e switches. Ele é gerenciado pela AWS, ou seja, você não precisa se preocupar com a manutenção do hardware.
+
+## Provisionar recursos
+A AWS oferece várias formas de provisionar recursos, como por exemplo:
+- Console: É a forma mais simples de provisionar recursos, mas não é recomendada para ambientes de produção.
+- AWS CLI: É uma ferramenta de linha de comando que permite que você provisione recursos de forma automatizada.
+- AWS SDK: É uma biblioteca que permite que você acesse e gerencie recursos da AWS através do seu código.
+
+## AWS Elastic Beenstalk
+O [AWS Elastic Beenstalk](https://aws.amazon.com/elasticbeanstalk/) é um serviço que permite que você provisione recursos em um ambiente baseado em instãncias EC2 de forma simples e rápida.
+
+## AWS CloudFormation
+O [AWS CloudFormation](https://aws.amazon.com/cloudformation/) é um serviço que permite que você provisione recursos de forma automatizada. Ele é baseado em templates, que são arquivos JSON ou YAML que descrevem os recursos que você quer provisionar. Ele é muito útil para provisionar ambientes complexos, pois você pode criar templates que provisionam vários recursos ao mesmo tempo.
+
+Aproveite para ver a o [ultimo post da série](/post/modulo-2-aws-essentials-pt-2/).
