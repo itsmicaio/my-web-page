@@ -1,0 +1,85 @@
+---
+layout: blog
+title: "Conectando ao DocumentDB com Mongoose"
+date: 2023-07-19
+tags:
+  - aws
+  - nodejs
+---
+
+Hoje estava tentando conectar ao DocumentDB da AWS usando o Mongoose, mas não estava conseguindo.
+Isso me motivou a trazer esse formato de post, um post que indexa vários outros posts que me ajudaram a resolver o problema.
+
+# Iniciando os trabalhos
+
+A primeira coisa que temos que saber quando vamos trabalhar com o DocumentDB é que eles são hospedados dentro de uma VPC. Isso significa que não podemos acessar diretamente o DB sem estar dentro dessa VPC.
+
+Então vamos utilizar uma EC2 para conseguir acessar nosso DocumentDB.
+
+> Siga os passos 1 ao 4 da documentação:
+> [Connect Using Amazon EC2](https://docs.amazonaws.cn/en_us/documentdb/latest/developerguide/connect-ec2.html)
+
+Bom, você deve ter notado que o link acima trás 9 passos e eu peço para você parar no 4. Na verdade eu fui até o 9 e quebrei a cara, então vou te poupar de fazer o mesmo.
+Depois de uma boa pesquisa, encontrei um anjo no stackoverflow que trouxe o verdadeiro problema. A documentação está omitindo 1 passo muito importante.
+
+> Veja o comentário e siga a instrução de adicionar uma nova Inbound Rule no Security Group da EC2:
+> [Comentário do `Danil Suhomlinov`](https://stackoverflow.com/a/74360199/9877567)
+
+Depois desse pequeno ajuste você até pode continuar os outros passos do tutorial da AWS, mas não será necessário com os próximos tópicos.
+
+# Conectando na sua instância EC2
+
+Talvez você esteja se perguntando, pra que uma EC2? Porque não conectar direto no DocumentDB?
+Bom como eu expliquei acima, conectar direto no DocumentDB não é possível, mas você pode conectar na sua EC2 e de lá conectar no DocumentDB.
+
+Você pode utilizar o comando abaixo para "túnelar" seu DocumentDB via sua EC2:
+
+```bash
+ssh -i "ec2Access.pem" -L 27017:sample-cluster.node.us-east-1.docdb.amazonaws.com:27017 ubuntu@ec2-34-229-221-164.compute-1.amazonaws.com -N
+```
+
+Obs: lembre-se de alterar o nome do arquivo `ec2Access.pem` e o IP da sua EC2.
+
+> Caso queira saber mais, acesse o artigo da AWS sobre isso:
+> [Connecting to an Amazon DocumentDB Cluster from Outside an Amazon VPC](https://docs.aws.amazon.com/documentdb/latest/developerguide/connect-from-outside-a-vpc.html)
+
+# Conectando no DocumentDB
+
+Pronto agora já temos uma conexão "indireta" com o DocumentDB através do nosso túnel SSH.
+
+Agora vamos conectar no DocumentDB usando o Mongoose. Novamente trago um artigo da AWS para vocês. Esse artigo é bem completo e explica como conectar no DocumentDB "programaticamente", você precisará baixar um certificado.
+
+> Siga os passos da documentação para conectar sua aplicação ao DocumentDB:
+> [Connecting Programmatically to Amazon DocumentDB](https://docs.aws.amazon.com/documentdb/latest/developerguide/connect_programmatically.html)
+Obs: Por padrão o DocumentDB vem com TLS ativado, você pode alterar isso seguindo [esse link](https://docs.aws.amazon.com/documentdb/latest/developerguide/security.encryption.ssl.html#security.encryption.ssl.managing).
+
+Para finalizar mais 4 passos importantes:
+
+1. Altere o host da sua string de conexão para `localhost`;
+2. Passe todos os query string parameters para as opções de conexão do Mongoose;
+3. Será necessário adicionar `rejectUnauthorized: true` nas opções de conexão;
+4. Além dessa, também vamos adicionar `directConnection: true`;
+5. Opcional: eu alterei a promise para `await` para facilitar o entendimento.
+
+> Referência do passo 2: [Comentário do `natevw`](https://stackoverflow.com/a/16311147/9877567)
+
+> Referência do passo 3: [Comentário do `Joe`](https://stackoverflow.com/a/70189567/9877567)
+
+Se seguiu tudo direitinho você deve ter essa configuração de conexão:
+
+```js
+import mongoose from "mongoose";
+import path from "path";
+
+await mongoose.connect("mongodb://<sample-user>:<password>@localhost:27017", {
+  tls: true,
+  tlsCAFile: path.join(__dirname + "/global-bundle.pem"),
+  replicaSet: "rs0",
+  readPreference: "secondaryPreferred",
+  retryWrites: false,
+  rejectUnauthorized: false,
+  directConnection: true,
+});
+```
+
+E bom, é isso agora é só da o start e ter fé que vai dar tudo certo. Espero que tenha ajudado vocês.
