@@ -21,19 +21,18 @@ const PostTemplate: React.FC<IProps> = ({ data, children }) => {
           <h1 className="my-8 max-w-xs text-white text-2xl">Caio Fuzatto</h1>
         </a>
       </header>
-      <main>
-        <article className="pl-0 w-full flex flex-col items-center">
-          <div className="font-thin max-w-lg mb-7 py-2 px-1">
-            <p className="text-sm mt-2 mb-0 leading-5">{frontmatter.date}</p>
-            <h1 className="font-bold text-lg ">{frontmatter.title}</h1>
+      <article className="pl-0 w-full flex flex-col items-center mb-7">
+        <div className="max-w-lg space-x-2">
+          <h1 className="font-bold text-2xl">{frontmatter.title}</h1>
+          <span className="text-sm">{frontmatter.date}</span>
 
-            <MDXProvider>
-              <div className="text-sm mt-2 mb-5 leading-5 mdx">{children}</div>
-            </MDXProvider>
-            <ListTags tags={frontmatter.tags} classNames="mt-2" />
-          </div>
-        </article>
-      </main>
+          <MDXProvider>
+            <div className="mdx">{children}</div>
+          </MDXProvider>
+
+          <ListTags tags={frontmatter.tags} />
+        </div>
+      </article>
     </div>
   );
 };
@@ -44,7 +43,7 @@ export const query = graphql`
   query ($id: String!) {
     mdx(id: { eq: $id }) {
       frontmatter {
-        date
+        date(locale: "pt-br", formatString: "DD [de] MMMM [de] YYYY")
         tags
         title
       }
