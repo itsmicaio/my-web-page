@@ -22,7 +22,7 @@ const PostTemplate: React.FC<IProps> = ({ data, children }) => {
         </a>
       </header>
       <article className="pl-0 w-full flex flex-col items-center mb-7">
-        <div className="max-w-lg space-x-2">
+        <div className="max-w-lg w-screen">
           <h1 className="font-bold text-2xl">{frontmatter.title}</h1>
           <span className="text-sm">{frontmatter.date}</span>
 

@@ -53,8 +53,8 @@
 .mdx blockquote {
   color: rgb(75 85 99 / var(--tw-text-opacity));;
   border-left: 0.3rem solid #4e8663;
-  padding: 0 1.875rem;
-  margin: 3.125rem auto;
+  padding: 0 1rem;
+  margin: 0.5rem auto;
 }
 .mdx hr {
   border-left: 0.3rem solid #4e8663;
@@ -67,10 +67,10 @@
   line-height: 1.4;
 }
 .mdx h1 {
-  font-size: 1.875rem;
+  font-size: 1.5rem;
 }
 .mdx h2 {
-  font-size: 1.5rem;
+  font-size: 1.25rem;
 }
 .mdx h3 {
   font-size: 1.125rem;

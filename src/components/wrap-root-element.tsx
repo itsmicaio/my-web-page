@@ -12,7 +12,7 @@ const components = {
     return (
       <Highlight code={code} language={language} theme={AppPrismTheme}>
         {({ className, style, tokens, getLineProps, getTokenProps }) => (
-          <pre className={`${className} p-2`} style={style}>
+          <pre className={`${className} p-2 max-w-lg w-screen overflow-x-auto`} style={style}>
             <div className="bg-green w-fit px-2 py-1 text-white -mt-2 mb-1">
               {language.toUpperCase()}
             </div>
@@ -47,6 +47,14 @@ const components = {
           </code>
         )}
       </Highlight>
+    );
+  },
+  a: (props: any) => {
+    return (
+      <a
+        {...props}
+        target="_blank"
+      />
     );
   },
   wrapper: ({ children }: any) => <>{children}</>,
