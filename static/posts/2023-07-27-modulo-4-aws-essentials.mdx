@@ -1,0 +1,55 @@
+---
+layout: blog
+title: "AWS Essentials - Módulo 4"
+date: 2023-07-28
+tags:
+  - aws
+---
+
+Bora lá pra mais um módulo do curso preparatório para certificação AWS Essentials. O assunto de hoje é o meu calcanhar de aquiles: **Redes**.
+
+# Amazon Virtual Private Cloud
+
+Também chamado de [Amazon VPC](https://aws.amazon.com/vpc), é um serviço que permite que você crie uma rede virtual na AWS semelhante a uma rede tradicional de datacenter. Você tem controle total sobre sua rede virtual, incluindo a seleção de seu próprio intervalo de endereços IP, criação de sub-redes e configuração de tabelas de rotas e gateways de rede.
+
+## Internet Gateway
+
+É um gateway que permite que você conecte uma rede VPC à Internet.
+Ele é um componente fundamental para permitir a conectividade com a Internet.
+
+## Virtual Private Gateway
+
+Você pode utilizar uma Virtual Private Gateway para proteger quem pode acessar sua VPC. Ela é uma conexão VPN que permite que você estabeleça uma conexão segura entre sua rede local e sua VPC. Apesar do nome ser private, o trafego passa pela rede pública, mas é criptografado.
+
+### AWS Direct Connect
+
+O [AWS Direct Connect](https://aws.amazon.com/directconnect/) É um serviço de rede que permite que você estabeleça uma conexão dedicada entre sua rede local e uma VPC da AWS. Assim você pode reduzir os custos de rede, aumentar a largura de banda e fornecer uma experiência mais consistente do que conexões de Internet.
+
+# Subnet
+
+Uma subnet é uma seção de uma VPC na qual você pode agrupar recursos com base em necessidades de segurança ou operacionais. As sub-redes podem ser públicas ou privadas.
+
+- Public subnet: uma subnet pública é uma subnet que tem uma rota para a Internet.
+- Private subnet: uma subnet privada é uma subnet que não tem uma rota para a Internet.
+
+Todas as subnets dentro de uma VPC podem se comunicar entre si. Você pode ter uma EC2 em uma subnet pública que hospeda o seu site e uma subnet privada onde vai ficar o seu banco de dados, isolado do acesso público mas com acesso liberado para a EC2.
+
+## Network Access Control Lists (ACLs)
+
+Uma ACL controla todo o acesso de entrada e saída da sua subnet. Ela atua na borda da subnet, permitindo ou negando o tráfego com base nas regras que você definiu.
+
+As ACLs são **stateless** (não mantém estado). Isso significa que se você permitir o tráfego de entrada para um _pacote_, o tráfego de saída para o mesmo _pacote_ será negado, a menos que você crie uma regra de saída para essa porta.
+
+## Security Group
+
+Um security group é um firewall virtual que controla o tráfego de entrada e saída de uma instância EC2. Quando você inicia uma instância, você pode associar um ou mais security groups a ela. Você pode adicionar regras de entrada e saída a um security group que permitem que o tráfego de entrada ou saída alcance a instância.
+Diferente da ACL, o SC é **stateful** (mantém estado). Isso significa que se você permitir o tráfego de entrada para uma _pacote_, o tráfego de saída para o mesmo _pacote_ será permitido automaticamente.
+
+> **Pacote**
+> Um pacote é um conjunto de dados que é enviado pela rede. Um pacote pode conter dados de um aplicativo, como um e-mail ou uma mensagem instantânea, ou pode ser um pacote de dados de rede que contém informações sobre o próprio pacote, como o endereço IP de origem e o endereço IP de destino.
+
+## Amazon Route 53
+
+O [Route 53](https://aws.amazon.com/route53/) é um serviço de DNS (Domain Name System) que permite que você registre nomes de domínio e traduza nomes de domínio em endereços IP da Amazon.
+
+Bom pessoal, posso dizer que após tanto quebrar cabeça com subnets e security grups eu finalmente entendi o conceito. Espero que vocês também tenham entendido. Aproveite para ver o [último post dessa jornada](/post/modulo-3-aws-essentials/), até a próxima!
