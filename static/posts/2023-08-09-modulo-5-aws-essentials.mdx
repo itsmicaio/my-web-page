@@ -1,0 +1,97 @@
+---
+layout: blog
+title: "AWS Essentials - Módulo 5 pt. 1"
+date: 2023-08-09
+tags:
+  - aws
+---
+
+Assim como no segundo módulo, vou precisar dividir o Módulo 5 em duas partes. Nessa primeira parte vamos falar de armazenamento de arquivos. Vamos lá?
+
+# Instances Stores
+
+Uma instance storage fornece um armazenamento "block-level" temporário para uma instância EC2. Uma vez que a instância é terminada, o conteúdo do armazenamento é perdido.
+
+# Amazon Elastic Block Store (EBS)
+
+O EBS é um serviço de armazenamento de blocos que fornece volumes de armazenamento persistente e de baixa latência para uso com instâncias EC2. Ele é ideal para casos em que você precise armazenar dados que precisam persistir além da vida útil de uma única instância EC2.
+
+## Amazon EBS snapshots
+
+Se os dados que você armazenar no EBS forem importantes (e provavelmente serão), você deve fazer um backup dos dados. O EBS fornece um recurso de [snapshot]() que permite fazer backup de um volume EBS inteiro em um determinado momento. Os snapshots são armazenados no Amazon S3 e são incrementais, o que significa que apenas os blocos que foram alterados desde o último snapshot são armazenados novamente.
+
+# Amazon Simple Storage Service (S3)
+
+O Amazon S3 é um serviço de armazenamento de objetos que fornece armazenamento de objetos altamente escalável, seguro e de baixo custo. Os objetos são armazenados em buckets - que são como pastas de arquivos dentro do s3 - e podem ser de qualquer tamanho, de 0 bytes a 5 TB. Os objetos são armazenados em um namespace global, o que significa que os nomes dos buckets devem ser exclusivos globalmente.
+
+> **Object storage**
+>
+> Um objeto consiste em dados, metadados e uma chave. Os dados podem ser uma imagem, vídeo, documento de texto o qualquer outro tipo de arquivo. Os metadados são atributos que descrevem o objeto, como o tamanho do objeto, o tipo de conteúdo e a data de criação. A chave é um identificador exclusivo para o objeto e é usada para recuperar o objeto.
+
+## Amazon S3 storage classes
+
+O S3 oferece diferentes classes de armazenamento para atender a diferentes requisitos de disponíbilidade e custo.
+
+### S3 Standard
+
+- Essa é a classe padrão do S3;
+- Classe com mais disponibilidade e consequentemente maior custo;
+- Ideal para dados que precisam ser acessados com frequência;
+- É a classe com maior custo;
+- Armazena os dados em pelo menos 3 zonas de disponibilidade;
+
+### S3 Standard-Infrequent Access (S3 Standard-IA)
+
+- Classe de armazenamento de baixo custo porém tem um custo alto para recuperar os dados;
+- Ideal para dados que não precisam ser acessados com frequência;
+- Armazena os dados em pelo menos 3 zonas de disponibilidade;
+
+### S3 One Zone-Infrequent Access (S3 One Zone-IA)
+
+- Diferente das outras, essa classe armazena o dado em apenas uma zona de disponibilidade;
+- Ideal para dados que não precisam ser acessados com frequência e que não precisam de alta disponibilidade;
+
+### S3 Intelligent-Tiering
+
+Essa é uma classe inteligende (do inglês) que monitora a atividade do objeto e o move automaticamente para a classe de armazenamento mais apropriada, com base no uso. Por exemplo, se o dado não for acessado por 30 dias, ele será movido para a classe de armazenamento infrequente S3 Standard-IA. Da mesma forma que se o dado for acessado na S3 Standard-IA o S3 irá mover o dado de volta para a S3 Standard, ajudando você a reduzir os custos de armazenamento.
+
+### S3 Glacier Instant Retrieval
+
+- Classe de armazenamento de baixo custo porém tem um custo alto para recuperar os dados;
+- Funciona bem para dados arquivados que precisam ser acessados com poucos milissegundos de latência como na S3 Standard;
+
+### S3 Glacier Flexible Retrieval
+
+- Essa classe tem um custo de amarzenamento mais baixo que o S3 Glacier Instant Retrieval;
+- Para recuperar o dado leva entre 1 minuto e 12 horas;
+
+### S3 Glacier Deep Archive
+
+- Classe de armazenamento com o menor custo do S3;
+- Mas, para recuperar o dado leva entre 12 e 48 horas;
+
+## S3 Outposts
+
+O S3 também tem um suporte ao AWS Outposts que é um serviço que permite executar serviços da AWS em seu próprio datacenter. Com o S3 Outposts você pode armazenar dados localmente e acessá-los usando APIs do S3.
+
+## EBS X S3
+
+O serviço mais adequado sempre vai depender da sua demanda, mas aqui está dois casos de usos comuns:
+
+- Você tem uma aplicação em que os seus usuários enviam fotos de animais e o sistema procura imagens semelhantes a que foi enviada pelo cliente. Esse caso é tipico de S3;
+- Mas se você tem um arquivo gigantesco, como um vídeo em 4k que precisa ser editado, o EBS é o mais adequado;
+
+No S3 o arquivo é imútavel, então você precisaria reenviar o arquivo novamente após a edição. Ja no EBS, o armazenamento é em blocos, então ele permite a edição do arquivo.
+
+# Amazon Elastic File System (EFS)
+
+O Amazon EFS é ideal para casos em o dado precisa ser acesso por vários serviços ao mesmo tempo. Ao adicionar ou remover um arquivo, o EFS aumenta ou diminui o espaço automáticamente, consegundo escalar para petabytes sem interromper os acessos.
+
+> Servidores on-premises conseguem acessar o EFS utilizando o AWS Direct Connect.
+
+## Diferenças entre o EBS
+
+- O EBS é anexado a uma instância e por isso só pode ser acessado por uma instância por vez;
+- O EBS tem o escopo de uma zona de disponibilidade; enquanto o EFS tem o escopo de uma região;
+
+E por hoje é só! No próximo post vamos falar sobre Banco de dados. Até lá!
