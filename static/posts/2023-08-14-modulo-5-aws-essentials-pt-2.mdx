@@ -1,0 +1,84 @@
+---
+layout: blog
+title: "AWS Essentials - Módulo 5 pt. 2"
+date: 2023-08-14
+tags:
+  - aws
+---
+
+Bora terminar o 5º módulo desse curso maravilhoso! E hoje aquele assunto que todo dev fala que sabe: Banco de Dados. 
+
+# Amazon Relational Database Service (RDS)
+
+O [RDS](https://aws.amazon.com/rds/) é um serviço de banco de dados relacional que facilita a configuração, operação e escalabilidade de um banco de dados relacional na nuvem. Ele fornece capacidade econômica e redimensionável, enquanto gerencia tarefas de administração de banco de dados, como provisionamento de hardware, configuração de banco de dados, aplicação de patches e backups. Ele automatiza tarefas demoradas, permitindo que você se concentre em seus aplicativos.
+
+## Amazon RDS database engines
+
+- Amazon Aurora
+- PostgreSQL
+- MySQL
+- MariaDB
+- Oracle
+- Microsoft SQL Server
+
+## Amazon Aurora
+
+O [Amazon Aurora](https://aws.amazon.com/rds/aurora/) é um banco de dados relacional compatível com MySQL e PostgreSQL, criado para a nuvem e altamente escalável, que combina o desempenho e a disponibilidade de bancos de dados comerciais avançados com a simplicidade e a economia de bancos de dados de código aberto. 
+O Amazon Aurora oferece cinco vezes o desempenho do MySQL e três vezes o desempenho do PostgreSQL padrão, além de oferecer a segurança, a disponibilidade e a confiabilidade de bancos de dados comerciais a um décimo do custo.
+
+# Amazon DynamoDB
+
+O [DynamoDB](https://aws.amazon.com/dynamodb/) é um banco de dados de valores-chave e documentos que oferece desempenho de um dígito de milissegundos em qualquer escala. É um banco de dados totalmente gerenciado, multirregional, com backup e restauração e segurança integrados e oferece armazenamento em cache na memória para aplicativos que exigem latência de microssegundos. O DynamoDB pode escalar automaticamente a dezenas de milhões de solicitações por segundo para suportar picos repentinos de tráfego sem necessidade de administração de banco de dados.
+
+# Amazon Redshift
+
+O [Redshift](https://aws.amazon.com/redshift/) é um data warehouse rápido, simples e econômico, que faz consultas em petabytes de dados usando a estrutura de data warehouse de código aberto PostgreSQL e o mecanismo de consulta otimizado de última geração do Amazon. O Redshift oferece desempenho 10 vezes mais rápido do que outros data warehouses baseados em disco, enquanto os custos são menos de 1/10 de uma solução de data warehouse tradicional. O Redshift oferece a você a rapidez e a economia de dados em escala de petabytes, além da simplicidade de data warehouse de código aberto.
+
+# AWS Database Migration Service (AWS DMS)
+
+O [AWS DMS](https://aws.amazon.com/dms/) é um serviço que facilita a migração de bancos de dados relacionais, data warehouses e bancos de dados NoSQL para a AWS de maneira econômica e com pouco ou nenhum tempo de inatividade.
+
+Outros casos de uso para o DMS:
+- Possibilita testar a aplicação com dados reais sem afeta o ambiente de produção;
+- Consolidação de vários databases em um só;
+- Réplica continua dos dados.
+
+## AWS Schema Conversion Tool
+
+Caso você necessite mudar o tipo do seu banco de dados (por exemplo sair de um banco de dados Oracle para um banco de dados PostgreSQL) você pode utilizar o [AWS Schema Conversion Tool](https://aws.amazon.com/pt/dms/schema-conversion-tool/). É a ferramenta ideal para você converter seu schema, tipos de dados e códigos de banco de dados.
+
+# Outros serviços de banco de dados
+
+Para finalizar o módulo, a gente vai ver outros serviços de banco de dados que a AWS oferece.
+
+## Amazon DocumentDB
+
+O [Amazon DocumentBD](https://aws.amazon.com/documentdb/) é uma alternativa da amazon para banco de dados de documentos, que é compatível com [MongoDB](https://www.mongodb.com/).
+
+## Amazon Neptune
+
+O [Amazon Neptune](https://aws.amazon.com/neptune/) é um banco de dados de grafo, recomendado para sistemas de recomendações, detecção de fraudes e "knowledge graphs".
+
+> Knowledge graphs são grafos que armazenam informações sobre entidades e seus relacionamentos.
+
+## Amazon Quantum Ledger Database (Amazon QLDB)
+
+O [Amazon QLDB](https://aws.amazon.com/qldb/) é um banco de dados "ledger" totalmente gerenciado, com um log de transações imutável e transparente. Utilizado para armazenamento de transações financeiras, cadeias de suprimentos, registros de fabricação, etc.
+
+> Ledger é um livro contábil que registra transações econômicas.
+
+## Amazon Managed Blockchain
+
+O [Amazon Managed Blockchain](https://aws.amazon.com/managed-blockchain/) permite a criação e gerenciamento de redes de blockchain com frameworks open-source.
+
+> Blockchain é um sistema de registro (ledger) distribuído que permite que várias partes executem transações e compartilhem dados sem uma autoridade central.
+
+## Amazon ElastiCache
+
+O [Amazon ElastiCache](https://aws.amazon.com/elasticache/) é um serviço que adicionar uma camada de cache em cima dos seus banco de dados, ajudando a melhorar o tempo de leitura para requisições comuns. Suporta os mecanismos de cache [Memcached](https://memcached.org/) e [Redis](https://redis.io/).
+
+## Amazon DynamoDB Accelerator (DAX)
+
+O [DAX](https://aws.amazon.com/dynamodb/dax/) é um serviço de cache para o DynamoDB, que melhora o tempo de leitura de dados. Promete reduzir o tempo de leitura de milissegundos para microssegundos.
+
+E isso é tudo pessoal, muitas ferramentas e serviços para você utilizar na sua aplicação. Aproveite e de uma olhada na [parte um desse módulo](/post/modulo-5-aws-essentials/), onde a gente aprendeu sobre outras ferramentas de armazenamento. Até a próxima!
