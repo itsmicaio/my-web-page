@@ -54,6 +54,12 @@ const config: GatsbyConfig = {
         path: `${__dirname}/static/uploads`,
       },
     },
+    {
+      resolve: `gatsby-plugin-google-gtag`,
+      options: {
+        trackingIds: ["G-FE4HS11JXL"],
+      }
+    }
   ],
 };
 
