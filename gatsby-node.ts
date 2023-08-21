@@ -1,8 +1,27 @@
-const path = require("path");
-const { createFilePath } = require(`gatsby-source-filesystem`);
-const postTemplate = path.resolve(`./src/templates/post.tsx`)
+import path from "path";
+import { createFilePath } from "gatsby-source-filesystem";
+import { GatsbyNode } from "gatsby";
+const postTemplate = path.resolve(`./src/templates/post.tsx`);
 
-exports.onCreateNode = ({ node, getNode, actions }) => {
+export const createSchemaCustomization: GatsbyNode["createSchemaCustomization"] =
+  ({ actions }) => {
+    const { createTypes } = actions;
+    const typeDefs = `
+      type Mdx implements Node {
+        fields: Fields
+      }
+      type Fields {
+        slug: String!
+      }
+    `;
+    createTypes(typeDefs);
+  };
+
+export const onCreateNode: GatsbyNode["onCreateNode"] = ({
+  node,
+  getNode,
+  actions,
+}) => {
   const { createNodeField } = actions;
   if (node.internal.type === "Mdx") {
     const slug = createFilePath({
@@ -19,9 +38,40 @@ exports.onCreateNode = ({ node, getNode, actions }) => {
   }
 };
 
-exports.createPages = ({ graphql, actions }) => {
+type Post = {
+  node: {
+    fields: {
+      slug: string;
+    };
+    frontmatter: {
+      date: string;
+      tags: string[];
+      title: string;
+    };
+    body: string;
+    internal: {
+      contentFilePath: string;
+    };
+    id: string;
+  };
+  next: {
+    fields: {
+      slug: string;
+    };
+  };
+  previous: {
+    fields: {
+      slug: string;
+    };
+  };
+};
+
+export const createPages: GatsbyNode["createPages"] = async ({
+  graphql,
+  actions,
+}) => {
   const { createPage } = actions;
-  return graphql(`
+  const result = await graphql<{ allMdx: { edges: Post[] } }>(`
     query MyQuery {
       allMdx(sort: { frontmatter: { date: DESC } }) {
         edges {
@@ -53,7 +103,8 @@ exports.createPages = ({ graphql, actions }) => {
         }
       }
     }
-  `).then((result) => {
+  `);
+  if (result.data) {
     const posts = result.data.allMdx.edges;
     posts.forEach(({ node, next, previous }) => {
       createPage({
@@ -67,5 +118,5 @@ exports.createPages = ({ graphql, actions }) => {
         },
       });
     });
-  });
+  }
 };
