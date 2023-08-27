@@ -3,6 +3,7 @@ import { graphql } from "gatsby";
 import { Post } from "../entities/Post";
 import ListTags from "../components/list-tags";
 import { MDXProvider } from "@mdx-js/react";
+import Header from "../components/header";
 
 type IProps = {
   data: {
@@ -16,11 +17,8 @@ const PostTemplate: React.FC<IProps> = ({ data, children }) => {
   const { frontmatter } = mdx;
   return (
     <div className="text-gray-600 font-serif">
-      <header className="bg-green w-full flex flex-col items-center mb-7">
-        <a className="block" href="/">
-          <h1 className="my-8 max-w-xs text-white text-2xl">Caio Fuzatto</h1>
-        </a>
-      </header>
+      <Header />
+
       <article className="pl-0 w-full flex flex-col items-center mb-7">
         <div className="max-w-lg w-screen">
           <h1 className="font-bold text-2xl">{frontmatter.title}</h1>
