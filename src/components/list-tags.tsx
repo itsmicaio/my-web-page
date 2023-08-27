@@ -4,51 +4,39 @@ import { Tag } from "../entities/Tag";
 type IProps = {
   tags: Tag[];
   maxTags?: number;
-  classNames?: string;
 };
 
-const ListTags = ({ tags, maxTags, classNames }: IProps) => {
+const ListTags = ({ tags, maxTags }: IProps) => {
   const TagClasses = {
     aleatorio: {
       name: "Aleatório",
-      classes: "text-white bg-red-600",
     },
     javascript: {
       name: "JavaScript",
-      classes: "text-black bg-yellow-300",
     },
     web: {
       name: "Web",
-      classes: "text-white bg-sky-700",
     },
     typescript: {
       name: "TypeScript",
-      classes: "text-white bg-sky-600",
     },
     "google-cloud": {
       name: "GCP",
-      classes:
-        "p-0 px-1 text-gray-400 bg-white border-4 border-t-amber-500 border-r-red-600 border-b-blue-600 border-l-emerald-500",
     },
     aws: {
       name: "AWS",
-      classes: "text-sky-950 bg-amber-600",
     },
     frontend: {
       name: "FrontEnd",
-      classes: "text-white bg-fuchsia-700",
     },
     backend: {
       name: "BackEnd",
-      classes: "text-white bg-lime-900",
     },
     tech: {
       name: "Tech",
-      classes: "text-white bg-indigo-300",
     },
     nodejs: {
       name: "NodeJS",
-      classes: "text-zinc-800 bg-lime-500",
     },
   };
 
@@ -57,11 +45,12 @@ const ListTags = ({ tags, maxTags, classNames }: IProps) => {
     <span>+{tags.length - maxTags}</span>
   );
   return (
-    <div className={`flex items-center gap-2 ${classNames}`}>
+    <div className={`flex items-center gap-2`}>
       {showTags.map((tag) => (
         <span
           key={tag}
-          className={`font-bold text-xs rounded-md p-1 group-hover:bg-black group-hover:text-white group-hover:border-black ${TagClasses[tag].classes}`}
+          className={`font-bold text-xs rounded-md p-1 
+          bg-gray-600 text-white group-hover:bg-green group-hover:text-gray-200 hover:bg-black`}
           aria-label={`Tag ${tag}`}
         >
           {TagClasses[tag].name}

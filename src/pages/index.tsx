@@ -20,17 +20,16 @@ const IndexPage: React.FC<IProps> = ({ data }) => {
           {posts.map((post) => (
             <li
               key={post.node.id}
-              className="group hover:bg-gray-200 font-thin max-w-lg mb-7 py-2 px-1"
+              className="group hover:bg-gray-200 font-thin max-w-lg mb-2 px-1"
             >
-              <a className="block" href={post.node.fields.slug}>
+              <a className="block py-4" href={post.node.fields.slug}>
                 <div className="flex items-center">
-                  <h1 className="text-sm font-semibold group-hover:text-green">
+                  <h1 className="text-sm font-semibold group-hover:text-green mr-2">
                     {post.node.frontmatter.title}
                   </h1>
                   <ListTags
                     tags={post.node.frontmatter.tags}
                     maxTags={3}
-                    classNames="ml-2"
                   />
                 </div>
                 <p className="text-sm mt-2 mb-0 leading-5 group-hover:text-green">
