@@ -1,0 +1,102 @@
+---
+layout: article
+title: "Entendendo e otimizando AWS Lambdas"
+date: 2023-08-28
+tags:
+  - aws
+---
+
+Decidi que vou fazer uma talk para meu time sobre AWS Lambdas, e para isso, resolvi escrever um post sobre o assunto. A ideia é que eu possa usar esse post como base para a talk, e também para que outras pessoas possam aprender sobre o assunto.
+
+# Introdução
+
+## O que são AWS Lambdas?
+
+AWS Lambdas são funções que rodam na nuvem. Elas são executadas em um ambiente serverless, ou seja, não é necessário provisionar um servidor para executar a função. A AWS se encarrega de fazer isso para você.
+
+## Como as Lambdas são executadas?
+
+Quando você cria uma Lambda, você precisa definir um gatilho. Esse gatilho pode ser um evento, como por exemplo, um arquivo sendo criado em um bucket S3, ou uma requisição HTTP. Quando esse gatilho é acionado, a Lambda é executada. Após a execução, a Lambda é destruída.
+
+## Melhor maneira de trabalhar com Lambdas
+
+Você pode criar lambdas manualmente no console da AWS. Porém, a melhor maneira de trabalhar com Lambdas é usando o [Serverless Framework](https://www.serverless.com/). O Serverless Framework é uma ferramenta que permite que você crie e gerencie suas Lambdas usando código.x
+
+# MicroVMs
+
+As Lambdas são executadas em microVMs. Essas microVMs são criadas e destruídas conforme a necessidade. Quando uma Lambda é executada, uma microVM é criada para executar a Lambda.
+
+Quando a Lambda termina de executar, a microVM demora alguns segundos para ser destruída. Isso é feito para que a microVM possa ser reutilizada caso a Lambda seja executada novamente.
+
+## Firecracker
+
+As microVMs são criadas usando o [Firecracker](https://firecracker-microvm.github.io/). O Firecracker é uma tecnologia open source criada pela AWS.
+
+> Quando criamos o Lambda pela primeira vez, tivemos que escolher entre duas abordagens de segurança. Uma delas, a conteinerização, é rápida e eficiente em termos de recursos, mas não oferece forte isolamento entre os clientes; a outra, a execução de código dentro de uma máquina virtual, oferece maior segurança ao custo de sobrecarga computacional.
+>
+> O Firecracker oferece o melhor dos dois mundos: a segurança das máquinas virtuais baseadas em virtualização de hardware e a eficiência de recursos e o tempo de inicialização rápido dos contêineres.
+>
+> _Trecho traduzido do artigo [How AWS’s Firecracker virtual machines work](https://www.amazon.science/blog/how-awss-firecracker-virtual-machines-work)_
+
+# Cold start
+
+Quando uma Lambda é executada pela primeira vez, ela precisa ser inicializada. Isso é chamado de [cold start](https://docs.aws.amazon.com/pt_br/lambda/latest/operatorguide/execution-environments.html#cold-start-latency). O cold start é um problema, pois ele pode aumentar o tempo de resposta da Lambda.
+
+![Ilustração do cold start](/uploads/aws-lambdas-cold-start.svg)
+
+# Otimizando o cold start
+
+Existem algumas técnicas que podem ser usadas para [otimizar o cold start](https://docs.aws.amazon.com/pt_br/lambda/latest/operatorguide/execution-environments.html#cold-starts).
+
+- Diminuir o tamanho do código: Quanto menor o tamanho do seu pacote, mais rápido ele será baixado para a microVM.
+- Usar o recurso de provisioned concurrency: Assim você já deixa a lambda ligada apenas esperando para ser executada.
+- Instanciar objetos fora da função handler: Isso faz com que o objeto seja instanciado apenas uma vez (na inicialização, como mostrei acima), e não a cada execução da Lambda. Você pode ler mais sobre isso [aqui](https://docs.aws.amazon.com/pt_br/lambda/latest/operatorguide/static-initialization.html).
+- Usar o chip Graviton2: O chip Graviton2 é um chip ARM, que pode ser até 34% melhor no custo benefício. Você pode ler mais sobre isso [aqui](https://aws.amazon.com/pt/blogs/aws-brasil/funcoes-do-aws-lambda-viabilizadas-pelo-aws-graviton2-execute-suas-funcoes-no-arm-e-obtenha-uma-relacao-precodesempenho-ate-34-melhor/).
+
+## Provisioned concurrency
+
+Você pode usar o recurso de [provisioned concurrency](https://docs.aws.amazon.com/pt_br/lambda/latest/operatorguide/execution-environments.html#cold-starts). Com esse recurso, você pode definir um número de Lambdas que ficarão disponíveis para execução, sem o tempo do cold start.
+
+![Exemplo do provisioned concurrency](/uploads/aws-lambdas-provisioned-concurrency.svg)
+
+O exemplo acima mostra 2 lambdas disponíveis para execução imediata. Elas foram utilizadas para as execuções 1, 2 e 3. Quando a 4 execução aparece, as 2 lambdas que estão provisionadas estão ocupadas, então a uma terceira lambda é iniciada para dar conta da demanda. Assim que a execução 4 finaliza, a lambda 3 é finalizada, pois as 2 lambdas provisionadas estão sendo suficientes para a demanda do momento.
+
+# Lambda Layers
+
+As [Lambda Layers](https://docs.aws.amazon.com/pt_br/lambda/latest/dg/chapter-layers.html) são camadas que podem ser adicionadas a uma Lambda. Essas camadas podem conter código, bibliotecas, arquivos de configuração, etc.
+
+Você deve considerar usar Lambda Layers quando:
+
+- Você precisa compartilhar código entre várias Lambdas, por exemplo um código de conexão com o banco de dados;
+- Você precisa compartilhar bibliotecas entre várias Lambdas;
+- Para reduzir seu pacote de código e consequentemente reduzir custos;
+
+![Ilustração do funcionamento da lambda layers](/uploads/aws-lambdas-lambda-layers.svg)
+
+# Precificação da Lambda
+
+A Lambda é cobrada por uma relação entre tempo de execução e memória. Quanto mais memória você definir para a Lambda, mais caro fica o milissegundo de execução.
+
+Além desse fator, [existem outros fatores que influenciam no preço da Lambda](https://aws.amazon.com/lambda/pricing/), como por exemplo a quantidade mensal de execuções, o tamanho das respostas HTTP (caso a Lambda seja uma API), o tipo do chip e várias outras coisa.
+
+## Tempo de execução
+
+O tempo de execução de uma Lambda é limitado. O tempo máximo de execução é de 15 minutos. Se a Lambda não terminar de executar em 15 minutos, ela será finalizada.
+
+## Memória
+
+Você pode definir a quantidade de memória que uma Lambda terá disponível. Quanto mais memória, mais rápido a Lambda irá executar. O limite de memória é de 10GB.
+
+# Lambda Power Tuning
+
+O [Lambda Power Tuning](https://docs.aws.amazon.com/pt_br/lambda/latest/operatorguide/profile-functions.html) é uma ferramenta que ajuda a definir a quantidade de memória que uma Lambda deve ter. Essa ferramenta executa a Lambda com diferentes quantidades de memória, e mede o tempo de execução. Com isso, ela consegue definir a quantidade de memória ideal para a Lambda.
+
+![Gráfico comparativo de custo e velocidade da lambda](https://docs.aws.amazon.com/images/lambda/latest/operatorguide/images/perf-optimize-figure-9.png)
+
+Esse é um gráfico gerado pela ferramenta, que mostra o custo e a velocidade da Lambda com diferentes quantidades de memória. Vale ressaltar que essa é uma ferramenta open source, e você pode contribuir com ela no [GitHub](https://github.com/alexcasalboni/aws-lambda-power-tuning).
+
+# AWS Compute Optimizer
+
+O [AWS Compute Optimizer](https://aws.amazon.com/pt/compute-optimizer/) é uma ferramenta que analisa o uso de recursos computacionais da sua conta, e recomenda a melhor configuração para cada recurso. Essa ferramenta pode ser usada para otimizar o uso de recursos de Lambdas, EC2 e EBS.
+
+E foi isso galera, um post bem denso explicando vários conceitos sobre otimização de Lambdas. Espero que tirem proveito, e até a próxima!
