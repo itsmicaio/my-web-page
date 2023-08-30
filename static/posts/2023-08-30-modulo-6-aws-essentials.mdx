@@ -1,0 +1,134 @@
+---
+layout: blog
+title: "AWS Essentials - Módulo 6"
+date: 2023-08-14
+tags:
+  - aws
+---
+
+Depois de um tempo em que me dediquei a outros assuntos, vamos voltar para nossas aulas no [curso AWS Essentials](https://aws.amazon.com/pt/certification/certified-cloud-practitioner/). O assunto de hoje é segurança.
+
+# Shared Responsibility Model
+
+A AWS tem um [modelo de responsabilidade compartilhada](https://aws.amazon.com/compliance/shared-responsibility-model/), onde a AWS é responsável pela segurança **da** nuvem e o cliente é responsável pela segurança **na** nuvem.
+
+No curso um dos instrutores faz a seguinte analogia: imagine que você aluga uma casa, o proprietário é responsável pela segurança da casa, como portas e janelas, mas você é responsável pela segurança na casa, como trancar a porta e fechar as janelas.
+
+Basicamente a divisão de responsabilidades é a seguinte:
+- AWS: Rede, servidores e sistemas da nuvem;
+- Cliente: Tudo que ele cria na nuvem, suas aplicações, seus dados, etc.
+
+## AWS Artifact
+
+O [AWS Artifact](https://aws.amazon.com/artifact/) é um serviço que fornece acesso sob demanda aos relatórios de segurança e conformidade da AWS e a contratos on-line selecionados. O AWS Artifact consiste em duas seções principais: Acordos do AWS Artifact e Relatórios do AWS Artifact.
+
+- AWS Artifact Agreements: Suponha que sua empresa precise assinar um contrato com a AWS referente ao uso de determinados tipos de informações em todos os serviços da AWS. Você pode fazer isso por meio dos acordos do AWS Artifact.
+- AWS Artifact Reports: fornecem relatórios de conformidade de auditores terceirizados. O AWS Artifact Reports permanece atualizado com os relatórios mais recentes lançados. Você pode fornecer os relatórios de auditoria da AWS aos seus auditores ou reguladores como evidência dos controles de segurança da AWS.
+
+> A AWS tem o [Customer Compliance Center](https://aws.amazon.com/compliance/customer-center/), onde você pode ler histórias de conformidade de clientes para descobrir como empresas em setores regulamentados resolveram vários desafios de conformidade, governança e auditoria.
+
+# AWS Identity and Access Management (IAM)
+
+O [IAM](https://aws.amazon.com/kms/) é um serviço que permite gerenciar usuários e permissões na AWS. Com ele você pode criar usuários, grupos e políticas de acesso.
+
+## Root Account
+
+Quando você cria uma conta na AWS, você cria uma conta root, que tem acesso a todos os recursos da AWS. É recomendado que você não utilize essa para tarefas do dia a dia. 
+
+O curso recomenda utilizar a conta root apenas para criar o primeiro IAM user, e depois utilizar esse usuário para criar outros usuários e grupos.
+
+## IAM User
+
+Um usuário IAM é uma identidade que pode ser utilizada para acessar a AWS. Você pode criar usuários para pessoas, aplicações, serviços, etc. Por padrão as contas não tem acesso a nada, você precisa criar políticas de acesso para cada usuário.
+
+É ideal que você utilize um usuário IAM para cada pessoa que acessa a AWS, assim você pode gerenciar as permissões de cada um de forma individual.
+
+### Multi-Factor Authentication (MFA)
+
+O MFA é uma camada extra de segurança que você pode adicionar a sua conta. Com ele todos os usuários da sua conta vão precisar de um código gerado por um aplicativo ou um token físico para acessar a conta.
+
+## IAM Policies
+
+Uma política IAM é um documento que define as permissões de um usuário ou grupo. Você pode criar políticas para dar acesso a serviços específicos, como EC2, S3, etc. Ou você pode criar políticas para dar acesso a ações específicas, como criar um bucket no S3, ou criar uma instância no EC2.
+
+A AWS recomenda seguir o "principle of least privilege" (princípio do menor privilégio), que diz que você deve dar a cada usuário apenas as permissões necessárias para ele realizar suas tarefas e nada além disso.
+
+### Exemplo de IAM Policy
+
+```json
+{
+    "Version": "2012-10-17",
+    "Statement": [
+        {
+            "Sid": "Stmt1234567890",
+            "Effect": "Allow",
+            "Action": [
+                "s3:ListAllMyBuckets"
+            ],
+            "Resource": [
+                "arn:aws:s3:::*"
+            ]
+        }
+    ]
+}
+```
+
+Esse exemplo mostra uma política que permite listar todos os buckets do S3. A política tem um nome, um efeito, uma ação e um recurso.
+
+## IAM Groups
+
+Um grupo IAM é um conjunto de usuários. Você pode adicionar usuários a um grupo e dar permissões para o grupo. Isso facilita a administração de permissões, pois você pode dar permissões para um grupo e todos os usuários desse grupo terão essas permissões.
+
+## IAM Roles
+
+Uma role IAM é uma identidade que pode ser assumida por um usuário ou serviço. Você pode criar uma role e dar permissões para ela, e depois permitir que usuários ou serviços assumam essa role.
+
+# AWS Organizations
+
+Supondo que você precise gerenciar várias contas AWS, você pode utilizar o [AWS Organizations](https://aws.amazon.com/organizations/). Ao criar uma organização você cria automaticamente uma conta "root" e pode adicionar outras unidades (contas) a essa organização.
+
+## Organizational units (OUs)
+
+Uma unidade organizacional é uma conta AWS que você adiciona a sua organização. Você pode criar unidades organizacionais para separar suas contas por departamento, por exemplo.
+
+## Service Control Policies (SCPs)
+
+Uma [política de controle de serviço](https://docs.aws.amazon.com/organizations/latest/userguide/orgs_manage_policies_scps.html) é um documento que define as permissões de uma unidade (conta) ou grupo de unidades. Você pode criar políticas para dar acesso a serviços específicos, como EC2, S3, etc. Ou você pode criar políticas para dar acesso a ações específicas, como criar um bucket no S3, ou criar uma instância no EC2.
+
+# AWS Shield
+
+O [AWS Shield](https://aws.amazon.com/shield/) é um serviço que protege sua aplicação de ataques DDoS. Ele tem duas versões, o AWS Shield Standard e o AWS Shield Advanced.
+
+## AWS Shield Standard
+
+O AWS Shield Standard é um serviço gratuito que protege sua aplicação dos tipos mais comuns e frequentes de ataques DDoS. Ele é ativado automaticamente para todos os clientes da AWS.
+
+## AWS Shield Advanced
+
+O AWS Shield Advanced é um serviço pago que fornece diagnósticos detalhados de ataques e a capacidade de detectar e mitigar ataques DDoS sofisticados. 
+
+Ele também se integra a outros serviços, como o Amazon CloudFront, o Amazon Route 53 e o Elastic Load Balancing. Além disso, você pode integrar o AWS Shield com o AWS WAF, escrevendo regras personalizadas para atenuar ataques DDoS complexos.
+
+> DDOS
+
+# Outros serviços de segurança
+
+Para finalizar, vamos ver mais alguns serviços que a AWS fornece para segurança da sua conta e aplicação.
+
+## AWS Key Management Service (AWS KMS)
+
+O [AWS Key Management Service (AWS KMS)](https://aws.amazon.com/kms/) é um serviço que permite criar e gerenciar chaves de criptografia. Com ele você pode criar chaves para criptografar dados, e também pode criar chaves para criptografar outras chaves.
+
+## AWS WAF
+
+O [AWS WAF](https://aws.amazon.com/waf/) é um serviço que permite criar regras para proteger sua aplicação de ataques. Você pode criar regras para bloquear IPs específicos, por exemplo.
+
+## Amazon Inspector
+
+O [Amazon Inspector](https://aws.amazon.com/inspector/) é um serviço que analisa a segurança da sua aplicação. Ele verifica se sua aplicação tem vulnerabilidades de segurança, como por exemplo, se ela está utilizando uma versão antiga de um software que tem uma vulnerabilidade conhecida.
+
+## Amazon GuardDuty
+
+O [Amazon GuardDuty](https://aws.amazon.com/guardduty/) é um serviço que monitora sua conta e aplicações em busca de atividades maliciosas. Ele analisa logs de outros serviços, como o CloudTrail, e tenta identificar DE forma inteligente atividades maliciosas.
+
+E isso é tudo pessoal, muitas ferramentas e serviços para você utilizar na sua aplicação. Aproveite e de uma olhada na [parte um desse módulo](/post/modulo-5-aws-essentials-pt-2/), que foi a segunda parte de um módulo focado em armazenamento. Até a próxima!
