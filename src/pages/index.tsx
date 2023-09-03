@@ -80,5 +80,9 @@ export const Head: HeadFC = () => (
       name="description"
       content="Minha página web. Aqui posto um diário de conhecimento técnico. Também tem um pouco sobre minha vida profissional."
     ></meta>
+    <meta
+      name="google-site-verification"
+      content="qEQ7n9bRewKMRJaoC4hs7FPPBNxFGPQgVNcxRztv3hY"
+    />
   </>
 );
