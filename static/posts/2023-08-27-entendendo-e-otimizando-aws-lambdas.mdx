@@ -49,9 +49,14 @@ Quando uma Lambda é executada pela primeira vez, ela precisa ser inicializada. 
 Existem algumas técnicas que podem ser usadas para [otimizar o cold start](https://docs.aws.amazon.com/pt_br/lambda/latest/operatorguide/execution-environments.html#cold-starts).
 
 - Diminuir o tamanho do código: Quanto menor o tamanho do seu pacote, mais rápido ele será baixado para a microVM.
-- Usar o recurso de provisioned concurrency: Assim você já deixa a lambda ligada apenas esperando para ser executada.
 - Instanciar objetos fora da função handler: Isso faz com que o objeto seja instanciado apenas uma vez (na inicialização, como mostrei acima), e não a cada execução da Lambda. Você pode ler mais sobre isso [aqui](https://docs.aws.amazon.com/pt_br/lambda/latest/operatorguide/static-initialization.html).
 - Usar o chip Graviton2: O chip Graviton2 é um chip ARM, que pode ser até 34% melhor no custo benefício. Você pode ler mais sobre isso [aqui](https://aws.amazon.com/pt/blogs/aws-brasil/funcoes-do-aws-lambda-viabilizadas-pelo-aws-graviton2-execute-suas-funcoes-no-arm-e-obtenha-uma-relacao-precodesempenho-ate-34-melhor/).
+
+## WarmUp
+
+Esse é um conceito onde você usa um outro serviço (que chamamos de warmer) para ficar executando a lambda num tempo determinado que não deixe a MicroVM morrer, assim ela fica sempre pronta e não tem o cold start a cada execução.
+
+Existem algumas maneiras de fazer o warmer, como utilizando CloudWatch Events, ou até mesmo uma outra lambda que cumpra essa função, como por exemplo usando o plugin [Serverless Plugin Warmup](https://www.serverless.com/plugins/serverless-plugin-warmup).
 
 ## Provisioned concurrency
 
