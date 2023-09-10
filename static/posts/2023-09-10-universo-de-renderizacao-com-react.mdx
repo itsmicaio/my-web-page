@@ -1,0 +1,92 @@
+---
+layout: article
+title: "Universo de renderização com React"
+date: 2023-09-10
+tags:
+  - frontend
+  - react
+---
+
+Já algum tempo que na comunidade React termos como CSR, SSR e entre outros são muito comentados. Então resolvi fazer aquele resumão bolado de cada um desses, o que eles representam e como podem ajudar no desenvolvimento de aplicações.
+
+# React
+
+O React é uma biblioteca JavaScript para construção de interfaces de usuário, criada pelo Facebook em 2013. O React é uma das bibliotecas mais populares para construção de interfaces de usuário, e é utilizado por empresas como Facebook, Instagram, Netflix, TikTok, Uber, entre outras.
+
+O React utiliza o conceito de componentes para construir interfaces de usuário, onde cada componente é uma parte da interface que pode ser reutilizada em diferentes partes da aplicação.
+
+# Client Side Rendering (CSR)
+
+A renderização do lado do cliente (CSR) é a forma padrão de renderização de aplicações React, onde o código JavaScript é executado no navegador do usuário. 
+Nesse modelo, a responsabilidade de gerar o HTML fica por conta do navegador, que vai executar o código JavaScript da aplicação e vai renderizar a aplicação, enviando o HTML já renderizado para o usuário.
+
+- **Performance**: Um dos principais problemas dessa abordagem é que ao acessar a página, o navegador precisa baixar todo o conteúdo do site de umas vez só, como JavaScript, inclusive as bibliotecas utilizadas no app, CSS e outros assets como imagens.
+- **SEO**: Como todo o HTML é gerado no navegador, os crawlers dos buscadores tem dificuldade para indexar as páginas de aplicações React. Esse ponto gera bastante discussão, pois de um lado o Google diz que da suporte para aplicações SPA mas de outro lado temos relatos de que o SEO não funciona muito bem.
+- **Interatividade**: Em contrapartida esse modelo é essencial para adicionar interatividade na aplicação, com APIs como `useState` e `useEffect` é possível adicionar ações rápidas e dinâmicas na página, tudo no navegador do usuário, sem a necessidade de aguardar requisições a servidores.
+
+# Server Side Rendering (SSR)
+
+O SSR é uma forma de renderização onde o código JavaScript é executado no servidor, gerando um HTML estático que será enviado para o navegador do usuário quando ele acessar a página.
+
+Ou seja, toda vez que o usuário acessar uma página da aplicação, a requisição será processada e o HTML será gerado no servidor, e então enviado para o navegador do usuário.
+
+- **Performance**: Diferente do CSR, o usuário vai receber o HTML já renderizado e o navegador vai conseguir exibir o conteúdo da página mais rápido. Além disso, o cliente vai precisar baixar apenas os assets necessários para a página, e não mais todo o código do site.
+- **SEO**: Com o HTML gerado no servidor, o conteúdo da aplicação já é enviado renderizado para o usuário, então os crawlers conseguem saber exatamente o conteúdo do site e fazer a indexação correta.
+- **Interatividade**: O trade-off aqui é a perda da mágica do React. Com tudo sendo gerado no servidor, você não pode usar hooks como `useEffect` e `useState`, além das APIs da web.
+
+Apesar de ter ganhado muita fama com o [Next.JS](https://nextjs.org/), o SSR ja é uma estratégia utilizada em vários frameworks da web, como o [Ruby on Rails](https://rubyonrails.org/), [Django](https://www.djangoproject.com/), [Laravel](https://laravel.com/), entre outros.
+
+# Static Site Generation (SSG)
+
+O SSG é uma forma de renderização onde o código JavaScript é executado na hora do build da aplicação, gerando um HTML estático que será enviado para o navegador do usuário quando ele acessar a página.
+
+Assim toda vez que a aplicação for buildada, o HTML será gerado e salvo em um arquivo estático, e então enviado para o navegador do usuário quando ele acessar a página.
+
+Bem semelhante ao SSR nos quesitos que estamos analisando. A grande diferença aqui é que tudo é estático. Ou seja, o conteúdo se manterá o mesmo até você rodar um novo build.
+
+> Gatsby é um framework React que utiliza o SSG para renderizar as aplicações. Este site foi construído com Gatsby e você pode ver no [meu Github](https://github.com/itsmicaio).
+
+# Misturando tudo: entendendo a hidratação
+
+Beleza, todos os modelos tem seus prós e contras, mas e se a gente combinasse todos eles? Isso é possível, e temos o framework Next.JS que casa todos esses modelos de renderização de uma maneira muito simples e eficiente. Vamos entender como isso funciona.
+
+Toda mágica do React acontece com a hidratação do HTML. Após o navegador fazer o download de todo o conteúdo, o React faz o parse do HTML, anexa os `event listeners` ao DOM e busca os dados do armazenamento local.
+
+> Basicamente o React pega o HTML "secão" gerado pelo servidor e hidrata ele com o suco do React.
+
+O [React 18 introduziu uma nova forma de hidratação](https://react.dev/reference/react-dom/client/hydrateRoot) em que é possível hidratar parcialmente o HTML. Isso resolve os dois problemas: ter que esperar que todo o JavaScript seja carregado para que a hidratação possa começar e precisar hidratar todo o aplicativo ou nada dele. Agora podemos hidratar apenas uma parte da página, como um componente específico que precise utilizar APIs client-side. 
+
+# Streaming SSR
+
+Uma outra grande novidade introduzida no React 18 é a [renderToPipeableStream API](https://react.dev/reference/react-dom/server/renderToPipeableStream). Com essa nova feature, o React vai renderizar o HTML da página em partes, e vai enviando para o navegador do usuário conforme vai ficando pronto. Assim o usuário não precisa esperar todo o HTML ser gerado para ver o conteúdo da página.
+
+# Suspense API
+
+O [Suspense](https://react.dev/reference/react/Suspense) é uma API que foi introduzida pelo time do React em uma [discussão em grupo](https://github.com/reactwg/react-18/discussions/37), que permite que você adicione um fallback para um componente que ainda não foi renderizado. Assim você pode adicionar um componente de loading enquanto o componente ainda não está pronto para ser exibido.
+
+```jsx
+<Suspense fallback={<Loading />}>
+  <SeuComponente />
+</Suspense>
+```
+
+No código acima o componente `Loading` será renderizada enquanto o `SeuComponente` estiver carregando. Assim que o componente estiver pronto, ele será renderizado no lugar do `Loading`.
+
+# React Server Components (RSCs)
+
+Os RSCs como o nome já entrega, são componentes React que são renderizado do lado do servidor. Isso permite o componente ter todo acesso a infraestrutura do do servidor, como acessar dados e fazer requisições mais rapidamente ás APIs. Além disso, por estar no servidor, o componente também pode ser cacheado, assim você consegue ter uma boa resiliência na sua aplicação. Por estar no servidor, você também perde as APIs client-side que eu mencionei la em cima.
+
+Mas Caio, isso é a mesma coisa que o SSR! Bom, tem uma grande diferença e eu vou explicar agora! Com o SSR o código é gerado no servidor e enviado para o navegador do usuário, e então o React vai fazer a hidratação do HTML. Com os RSCs, o código é gerado no servidor e enviado para o navegador do usuário, mas o React não vai fazer a hidratação.
+
+O RSC não recarrega a página ao ser carregado, mantendo os estados e tudo mais. Além disso ele também pode ser recarregado quando os dados que ele precisa sofrem uma mutação.
+
+---
+
+E esse foi meu resumão de estudos em cima de renderização no React. Vou deixar alguns artigos para você continuar seus estudos. Até a proxima :) 
+
+- [NextJS: por que usar?](https://www.alura.com.br/artigos/next-js-vantagens)
+- [(VÍDEO) Server Components do jeito certo! (nova feature React)](https://www.youtube.com/watch?v=L1osqF17iDM)
+- [SSG vs SSR in Next.js Web Applications: Choosing the Right Rendering Approach](https://itnext.io/face-to-face-comparison-server-components-vs-ssr-vs-ssg-in-next-js-747739257ec0)
+- [A guide to streaming SSR with React 18](https://blog.logrocket.com/streaming-ssr-with-react-18/)
+- [Understanding Hydration in React applications(SSR)](https://medium.com/@baphemot/understanding-react-suspense-1c73b4b0b1e6)
+- [React Server Components – How and Why You Should Use Them in Your Code](https://www.freecodecamp.org/news/how-to-use-react-server-components/)

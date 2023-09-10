@@ -38,7 +38,8 @@ collections:
               "frontend",
               "backend",
               "tech",
-              "nodejs"
+              "nodejs",
+              "react"
             ],
         }
       - { label: "Texto", name: "body", widget: "markdown" }

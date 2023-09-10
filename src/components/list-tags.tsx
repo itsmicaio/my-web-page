@@ -38,6 +38,9 @@ const ListTags = ({ tags, maxTags }: IProps) => {
     nodejs: {
       name: "NodeJS",
     },
+    react: {
+      name: "React",
+    }
   };
 
   const showTags = maxTags ? tags.slice(0, maxTags) : tags;
