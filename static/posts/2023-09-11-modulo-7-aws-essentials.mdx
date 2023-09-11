@@ -1,0 +1,43 @@
+---
+layout: blog
+title: "AWS Essentials - Módulo 7"
+date: 2023-09-11
+tags:
+  - aws
+---
+
+Bora galera que essa semana é a prova! Hoje o módulo vai falar sobre observabilidade e monitoramento. Vamos lá?
+
+# Amazon CloudWatch
+
+O [CloudWatch](https://aws.amazon.com/cloudwatch/) é um serviço de monitoramento e observabilidade da AWS. Ele coleta e monitora dados de recursos e aplicações da AWS, além de permitir a criação de dashboards e alertas.
+
+## CloudWatch alarms
+
+O CloudWatch permite a [criação de alarmes](https://docs.aws.amazon.com/AmazonCloudWatch/latest/monitoring/AlarmThatSendsEmail.html) para monitorar métricas e enviar notificações ou executar ações automaticamente. Os alarmes podem ser criados para métricas do próprio CloudWatch ou para métricas personalizadas como algum log da sua aplicação.
+
+## CloudWatch dashboard
+
+O [dashboard do CloudWatch](https://docs.aws.amazon.com/AmazonCloudWatch/latest/monitoring/CloudWatch_Dashboards.html) permite que você acesse todas as suas métricas dos seus recursos e aplicações em um único lugar.
+
+# AWS CloudTrail
+
+O [AWS CloudTrail](https://aws.amazon.com/cloudtrail/) salva todas as requisições feitas na sua conta da AWS. Você pode ver o histórico completo de atividade na sua conta da AWS, incluindo quem fez a requisição (o usuário logado), o IP de origem entre outras informações. Se você precisar auditar a sua conta da AWS, o CloudTrail é a solução.
+
+Essas informações são atualizadas no CloudTrail em 15 minutos, e você pode filtrar as requisições por data, usuário, IP, etc.
+
+## CloudTrail Insights
+
+Opcionalmente você pode habilitar o [CloudTrail Insights](https://docs.aws.amazon.com/awscloudtrail/latest/userguide/logging-insights-events-with-cloudtrail.html) para receber alertas de atividades suspeitas na sua conta da AWS. 
+
+# AWS Trusted Advisor
+
+O [AWS Trusted Advisor](https://aws.amazon.com/premiumsupport/technology/trusted-advisor/) é um serviço que analisa a sua conta da AWS e te dá recomendações para melhorar a segurança, performance, custos, tolerância a falhas e limites da sua conta.
+
+No dashboard do serviço você verá os checks da sua conta divididos em 3 categorias:
+
+- Verde: indica que o item está sem problemas.
+- Amarelo: indica que o item pode ser melhorado.
+- Vermelho: indica que o item tem ações recomendadas.
+
+E por hoje é só. O módulo foi pequeno mas é importante. Aproveita pra ler [o capitulo anterior dessa saga](/post/modulo-6-aws-essentials/), até a próxima!
