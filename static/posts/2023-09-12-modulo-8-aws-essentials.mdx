@@ -1,0 +1,120 @@
+---
+layout: blog
+title: "AWS Essentials - Módulo 8"
+date: 2023-09-12
+tags:
+  - aws
+---
+
+Seguindo nossa SEMANA DE AWS ESSENTIALS (só por que minha prova está chegando haha), hoje o assunto é chato. Precificação na AWS. Mas não se preocupe, eu vou tentar ser o mais breve possível. Bora lá?
+
+# AWS Free Tier
+
+Vamos começar com a parte mais legal, a parte que você não paga nada. O [AWS Free Tier](https://aws.amazon.com/free/) engloba vários serviços da AWS e são divididos em 3 categorias:
+
+## Always Free
+
+Esses serviços são sempre gratuitos, independente do tempo de uso.
+
+- [AWS Lambda](https://aws.amazon.com/lambda/) oferece 1 milhão de requisições e 3.2 milhões de segundos de computação por mês.
+- [Amazon DynamoDB](https://aws.amazon.com/dynamodb/) oferece 25GB de armazenamento por mês.
+
+## 12 Months Free
+
+Esses serviços são gratuitos por 12 meses, a partir do momento que você cria sua conta na AWS.
+
+- [Amazon EC2](https://aws.amazon.com/ec2/) oferece 750 horas de instância t2.micro por mês.
+- [Amazon S3](https://aws.amazon.com/s3/) oferece 5GB de armazenamento por mês.
+
+## Trials
+
+Esse modelo oferece um período de teste para você experimentar os serviços da AWS. Esse período de teste inicia quando você ativa um serviço o serviço na AWS.
+
+- [Amazon Inspector](https://aws.amazon.com/inspector/) oferece 90 dias de teste gratuito.
+- [Amazon Lightsail](https://aws.amazon.com/lightsail/) oferece 750 horas de uso gratuito em um período de 30 dias.
+
+# AWS Pricing Concepts
+
+Agora vamos falar sobre os conceitos de precificação da AWS.
+
+- **Pay for what you use**: Você paga apenas pelo que você usa. Se você não usa, você não paga.
+- **Pay less when you reserve**: Você pode reservar recursos e pagar menos por eles.
+- **Pay less with volume-based discounts when you use more**: Você pode pagar menos quando você usa mais recursos.
+
+# AWS Pricing Calculator
+
+A AWS oferece uma calculadora de preços para você estimar o custo de seus serviços. Você pode acessar a calculadora [aqui](https://calculator.aws/#/).
+
+# Billing Dashboard
+
+A AWS oferece um [dashboard de faturamento](https://docs.aws.amazon.com/awsaccountbilling/latest/aboutv2/billing-what-is.html) para você acompanhar seus gastos. O painel é bem completo, e você pode:
+- Comparar seu mês atual com meses anteriores.
+- Verificar o uso de cada serviço.
+- Visualizar o uso do free tier.
+- Acessar o Cost Explorer e criar orçamentos.
+- Comprar e gerenciar Saving Plans.
+
+# Consolidated Billing
+
+Nós falamos sobre AWS Organizations em outro módulo, e uma das vantagens de usar esse serviço é o [Consolidated Billing](https://docs.aws.amazon.com/awsaccountbilling/latest/aboutv2/consolidated-billing.html). Com o Consolidated Billing você pode consolidar o pagamento de várias faturas da AWS em uma única.
+
+Um outro benefício da fatura única é que a AWS aplica descontos de volume para o total de uso de todas as contas da organização. Isso permite que você organize suas contas da AWS como quiser, e ainda assim receber o desconto de volume.
+
+# AWS Budgets
+
+O [AWS Budgets](https://aws.amazon.com/aws-cost-management/aws-budgets/) é um serviço que permite que você defina orçamentos para seus gastos na AWS. Você pode criar orçamentos para monitorar seus gastos, e receber alertas quando você exceder seus orçamentos ou quando estiver previsto que o orçamento será excedido.
+
+# AWS Cost Explorer
+
+O [AWS Cost Explorer](https://aws.amazon.com/aws-cost-management/aws-cost-explorer/) é um serviço que permite que você visualize, analise e gerencie seus custos e uso da AWS. Você pode criar relatórios personalizados, com vários filtros, inclusive utilizando tags para identificar recursos de um projeto específico.
+
+Por exemplo, você pode adicionar um tag a uma EC2 e a um RDS identificando que esses recursos pertencem a um projeto. Depois você pode criar um relatório no Cost Explorer filtrando por essa tag, e assim você consegue visualizar o custo do projeto separado dos demais recursos da conta.
+
+# AWS Support
+
+A AWS oferece vários planos de suporte para ajudar na solução de problemas.
+
+## Planos 
+
+### Basic Support
+
+Esse é o plano padrão, e é gratuito. Ele inclui:
+- Acesso ao fórum de suporte.
+- Documentações e guias de usuário.
+- Acesso a seleção limitada de checks do AWS Trusted Advisor.
+- AWS Personal Health Dashboard.
+
+### Developer Support
+
+Se você quiser um suporte adicional você pode contratar o Developer Support. Esse plano inclui:
+- Tudo do Basic Support.
+- Suporte via email com respostas em até 12 horas.
+
+### Business Support
+
+- Basic Support + Developer Support.
+- Todos os checks do AWS Trusted Advisor.
+- Suporte via telefone com time de engenheiros da AWS.
+- Tempo de resposta de 4 horas quando você tiver problemas e 1 hora em caso de sistema inoperante.
+
+## AWS Enterprise On-Ramp Support
+
+- Basic Support + Developer Support + Business Support.
+- 30 minutos de tempo de resposta para sistemas criticos.
+- Acesso ao grupo de Technical Account Manager (TAM) da AWS.
+
+### AWS Enterprise Support
+
+- Basic Support + Developer Support + Business Support.
+- 15 minutos de tempo de resposta para sistemas criticos.
+- Um Technical Account Manager (TAM) dedicado.
+
+# Technical Account Manager (TAM)
+
+O Technical Account Manager (TAM) é um recurso que a AWS oferece para clientes que contratam o plano Enterprise Support. O TAM é um especialista da AWS que vai te ajudar a entender e utilizar os serviços da AWS. Um TAM dedicado vai trabalhar ativamente para melhorar sua experiência com a AWS, reduzindo custos e melhorando a performance de suas aplicações na AWS.
+
+# AWS Marketplace
+
+O [AWS Marketplace](https://aws.amazon.com/marketplace/) é um serviço que permite que você compre e venda software e serviços que rodam na AWS. Você pode encontrar e comprar software de terceiros, e também pode vender seus próprios produtos.
+
+Ufa, quanta coisa pra falar nesse módulo em? Mas confesso que apesar de achar chato, gostei do que vi. Aproveita pra ler [o capitulo anterior dessa saga](/post/modulo-7-aws-essentials/), amanhã tem mais!
