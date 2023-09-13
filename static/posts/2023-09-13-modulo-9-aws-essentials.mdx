@@ -1,0 +1,100 @@
+---
+layout: blog
+title: "AWS Essentials - Módulo 9"
+date: 2023-09-13
+tags:
+  - aws
+---
+
+Estamos quase lá galera, a prova é amanhã e a ansiedade está a mil. Sim eu estou terminando o curso da véspera da prova, mas tudo bem né? Bora pro módulo de hoje que é sobre Migração e Inovação na AWS. Partiu!
+
+# AWS Cloud Adoption Framework (AWS CAF)
+
+O [AWS CAF](https://d1.awsstatic.com/whitepapers/aws_cloud_adoption_framework.pdf) é um framework que ajuda a organizar e estruturar a adoção da AWS em uma empresa. Ele é composto por 6 áreas de foco:
+
+## Business Perspective
+
+A perspectiva de negócios se concentra em garantir que os seus investimentos na nuvem acelerem suas ambições de transformação digital e os resultados dos negócios.
+
+## People Perspective
+
+A perspectiva de pessoas serve como uma ponte entre a tecnologia e os negócios, acelerando a jornada para a nuvem com o objetivo de ajudar as organizações a adotar, com mais rapidez, uma cultura de crescimento contínuo e aprendizado em que a mudança se torna uma rotina normal dos negócios, com foco na cultura, estrutura organizacional, liderança e quadro de funcionários.
+
+## Governance Perspective
+
+A perspectiva de governança concentra-se na orquestração das suas iniciativas de nuvem, ao mesmo tempo em que maximiza os benefícios organizacionais e minimiza os riscos relacionados à transformação.
+
+## Platform Perspective
+
+A perspectiva de plataforma se concentra em acelerar a entrega das suas workloads na nuvem por meio de um ambiente de nuvem híbrida, escalável e de nível empresarial.
+
+## Security Perspective
+
+A perspectiva de segurança ajuda você a obter a confidencialidade, a integridade e a disponibilidade de workloads na nuvem e de dados.
+
+## Operations Perspective
+
+A perspectiva de operações concentra-se em garantir que os serviços em nuvem sejam prestados em um nível acordado com as partes interessadas da sua empresa. O ato de automatizar e otimizar as operações permitirá que você se adapte com eficiência e, ao mesmo tempo, melhore a confiabilidade das suas workloads.
+
+# Migration Strategies
+
+Quando você for fazer a migração para AWS, você pode adotar várias estratégias, as 6 mais comuns são:
+
+## Rehost
+
+Rehost é a estratégia mais simples, você simplesmente migra a aplicação para a AWS sem fazer nenhuma alteração. É uma estratégia rápida e barata, mas não aproveita os 100% recursos da AWS. Apesar disso, é um bom começo e já trás redução de custos em torno de 30%.
+
+## Replatform
+
+Replatform é a estratégia de migrar a aplicação para a AWS, mas aproveitando alguns recursos da AWS. Por exemplo, você pode migrar um banco de dados para o RDS, facilitando a vida dos DBAs do seu time e reduzindo ainda mais custos.
+
+## Refactoring/Re-architecting
+
+Refactoring (também conhecido como Re-architecting) envolve um reestruturação da aplicação utilizando funcionalidades nativas da AWS.
+
+## Repurchasing
+
+Repurchasing é a estratégia de mover de licenças para software open-source ou SaaS.
+
+## Retaining
+
+Retaining é a estratégia de manter a aplicação que são criticas para o negócio no local atual. Essa estratégia é comum quando a aplicação é muito antiga e grande, e vai precisar de um grande esforço para ser migrada. Nesse caso vale a pena esperar para uma futura migração.
+
+## Retiring
+
+Retiring é a estratégia de descontinuar a aplicação. Essa estratégia é comum quando a aplicação não é mais utilizada ou não é mais necessária.
+
+# AWS Snow Family
+
+O [AWS Snow Family](https://aws.amazon.com/snow/) é uma coleção de dispositivos físicos que ajudam a migrar grande volume de dados para a AWS. Os dispositivos são:
+
+## AWS Snowcone
+
+O [AWS Snowcone](https://aws.amazon.com/snowcone/) é o menor dispositivo da família. Tem 2 CPUs, 4 GB of memory e até 14TB de armazenamento utilizável.
+
+## AWS Snowball
+
+O [AWS Snowball] oferece 2 tipos de dispositivo:
+
+- **Snowball Edge Storage Optimized**: 80 TB de Hard Disk Drive (HDD) e 1 TB de Solid State Drive (SSD). Além de 40 vCPUS e 80 GB de memória. Esse dispositivo é ideal para transferência recorrentes de dados.
+- **Snowball Edge Compute Optimized**: 80 TB de HDD utilizável, 28 TB de NVMe SSD, ambos compatíveis com Amazon EBS. Além de 104 vCPUS, 416 GB de memória e você pode adicionar uma placa NVIDIA Tesla V100 GPU. Esse dispositivo é ideal para casos de uso como machine learning, análise de dados, processamento de dados, vídeo transcodificação e edge computing.
+
+## AWS Snowmobile
+
+O [AWS Snowmobile](https://aws.amazon.com/snowmobile/) é um serviço de transferência de dados na escala de exabytes. Você pode transferir até 100 petabytes de dados por Snowmobile, que é um container de 45 pés (13,7 metros) de comprimento, carregado por um caminhão.
+
+# Inovando com AWS
+
+A AWS oferece vários serviços que ajudam a inovar, alguns deles são:
+
+- [VMWare Cloud on AWS](https://aws.amazon.com/pt/vmware/): Permite que você use a mesma estrutura de VMWare on-premise na AWS.
+- [Amazon SageMaker](https://aws.amazon.com/sagemaker/): Permite que você construa, treine e implante modelos de machine learning. Com suporte para os mais populares frameworks de machine learning open-source.
+- [Amazon Augmented AI (Amazon A2I)](https://aws.amazon.com/augmented-ai/): é um serviço totalmente gerenciado que facilita a incorporação de revisões de desenvolvedores de previsões de ML, eliminando a necessidade de criar sistemas de revisão humana ou gerenciar um grande número de analistas humanos.
+- [Amazon Lex](https://aws.amazon.com/lex/): Esse é o coração (ou a mente) da famosa Alexa. Ajuda a criar chatbots e interfaces de voz para aplicativos.
+- [Amazon Textract](https://aws.amazon.com/textract/): Permite extrair textos e dados de documentos.
+- [AWS DeepRacer](https://aws.amazon.com/deepracer/): oferece uma maneira interessante e divertida de dar os primeiros passos com o Reinforcement Learning (RL – Aprendizado por reforço) e permite que você treine modelos de machine learning para corridas de carros autônomos. 
+- [AWS IoT](https://aws.amazon.com/iot/): oferece serviços e soluções de Internet das Coisas (IoT) para conectar e gerenciar bilhões de dispositivos.
+- [AWS Ground Station](https://aws.amazon.com/ground-station/): é um serviço totalmente gerenciado que permite controlar as comunicações, processar os dados e escalar as operações de satélites, sem se preocupar com a criação ou o gerenciamento de sua própria infraestrutura de estações terrestres.
+- [Amazon CodeWhisperer](https://aws.amazon.com/codewhisperer/): é um serviço de desenvolvimento de software que permite que você crie e implante aplicativos de forma rápida e fácil, sem se preocupar com a infraestrutura.
+
+Bom, essa última parte de inovação me deu uma boa animada para testar essas ferramentas de ML em? Se você chegou até aqui de paraquedas, veja [o último post dessa saga](/post/modulo-8-aws-essentials/), e amanhã temos o THE LAST ONE... será? até la!
