@@ -1,0 +1,390 @@
+---
+layout: blog
+title: "Implementando SSR com React e Express"
+date: 2023-09-23
+tags:
+  - react
+  - frontend
+---
+
+Fala galera, hoje estou com a ideia de criar meu próprio servidor de React utilizando [ExpressJS](https://expressjs.com/). A ideia é criar a lógica de SSR com as apis do React e utilizar o Express para cuidar das rotas e do servidor. Vamos nessa?
+
+Se você quiser entender os conceitos que estamos utilizando aqui, recomendo que leia o [post sobre o Universo de renderização do React](/post/universo-de-renderizacao-com-react/).
+
+# Criando o projeto
+
+Bom galera criei uma pasta chamada `react-ssr` e comecei rodando `yarn init` para criar o projeto. Depois disso instalei as dependências do express e do react com `yarn add express react react-dom`.
+
+## Typescript
+
+Para utilizar o typescript no projeto, instalei as dependências com:
+```bash
+yarn add -D typescript @types/react @types/react-dom @types/express
+```
+
+Depois disso criei o arquivo `tsconfig.json` com o comando `npx tsc --init`. As minhas configurações do typescript ficaram assim:
+
+```json
+{
+  "compilerOptions": {
+    "target": "ESNext",
+    "jsx": "react",                                
+    "module": "CommonJS",
+    "esModuleInterop": true,
+    "forceConsistentCasingInFileNames": true,
+    "skipLibCheck": true
+  }
+}
+```
+
+# Testando a instalação
+
+Agora para testar a instalação vamos fazer um hello world. Crie o arquivo `index.html` com o seguinte código:
+
+```html
+<!DOCTYPE html>
+<html lang="pt-br">
+  <head>
+    <title>Meu React App</title>
+  </head>
+  <body>
+    <div id="root"></div>
+  </body>
+</html>
+```
+
+> Observe que nosso HTML é bem semelhante ao que vem na pasta `public` de uma instalação feita com `create-react-app`. 
+
+Agora vamos criar nosso primeiro componente React. Crie o arquivo `App.tsx` e cole o código abaixo:
+
+```tsx
+import React from 'react'
+
+export const App = () => {
+  return (
+    <div>
+      <h1>Hello world</h1>
+    </div>
+  );
+}
+```
+
+Por fim vamos criar o arquivo `index.ts` que será o arquivo principal do nosso servidor React com Express, cole o seguinte código:
+
+```ts
+import path from "path";
+import fs from "fs";
+
+import React from "react";
+import ReactDOMServer from "react-dom/server";
+import express from "express";
+
+import { App } from "./App";
+
+const app = express();
+
+app.get("/", (req, res) => {
+  const appContent = ReactDOMServer.renderToString(React.createElement(App));
+  const indexFile = path.resolve("./index.html");
+
+  fs.readFile(indexFile, "utf8", (err, data) => {
+    if (err) {
+      return res.status(500).send("Não foi possível carregar o app.");
+    }
+
+    return res.send(
+      data.replace('<div id="root"></div>', `<div id="root">${appContent}</div>`)
+    );
+  });
+});
+
+app.listen(8080, () => {
+  console.log(`App rodando na porta ${8080}`);
+});
+```
+
+Para testar vamos rodar `npx ts-node index.ts` e acessar o `localhost:8080`. Se tudo deu certo, você deve ver o hello world na tela:
+
+![Imagem mostrando o título Hello World com devtools aberto](/uploads/react-express-hello-world.png)
+
+> Até esse momento criamos uma implementação básica simulando um SSR. Basicamente a gente está pegando um HTML base que é nosso _index.html_ e substituindo o conteúdo da div root pelo conteúdo do nosso componente App que foi gerado utilizando o `ReactDOMServer.renderToString`.
+
+# Hidratação do HTML
+
+Nesse ponto já temos uma implementação básica de SSR, mas ainda não temos a hidratação, ou seja, até aqui o React está 100% no servidor, se a gente adicionar um evento no botão, utilizando um `useState` por exemplo, ele não vai funcionar. Então vamos fazer a hidratação do nosso HTML. Vamos começar criando um componente React que utiliza um hook client-side para nosso teste. Altere o arquivo `App.tsx` para o seguinte:
+
+```tsx
+import React from 'react'
+
+export const App = () => {
+  const [state, setState] = React.useState(0);
+  
+  const count = () => {
+    const newState = state + 1
+    setState(newState);
+    console.log(newState)
+  }
+
+  return (
+    <div>
+      <h1>Counter: {state}</h1>
+      <button onClick={count}>Counter</button>
+    </div>
+  );
+}
+```
+
+## Instalando e configurando o webpack
+
+O Webpack é uma ferramenta que nos permite fazer o bundling do nosso código, ou seja, ele vai pegar todos os nossos arquivos e juntar em um só arquivo. Isso é muito útil para o browser, pois ele só precisa fazer uma requisição para o servidor e não várias. Nesse caso vamos utilizar o webpack para gerar um arquivo `bundle.js` que vai conter todo o nosso código React em Javascript.
+
+Antes de tudo vamos a uma pequena reorganização dos nossos arquivos:
+1. Vamos mover o arquivo `App.tsx` para a pasta `src/client/App.tsx`
+2. O arquivo `index.ts` para a pasta `src/server/index.ts`. 
+
+Para instalar as dependências do webpack rode o comando:
+```bash
+yarn add --dev ts-loader webpack webpack-cli
+```
+
+Agora vamos criar o arquivo `webpack.config.js` com o seguinte conteúdo:
+
+```js
+const path = require("path");
+
+const clientConfig = {
+  mode: "development",
+  target: "web",
+  entry: "./src/client/index.tsx",
+  module: {
+    rules: [
+      {
+        test: /\.tsx?$/,
+        use: "ts-loader",
+        exclude: /node_modules/,
+      },
+    ],
+  },
+  resolve: {
+    extensions: [".tsx", ".ts", ".js"],
+  },
+  output: {
+    filename: "bundle.js",
+    path: path.resolve(__dirname, "dist/public"),
+  },
+};
+
+const serverConfig = {
+  mode: "development",
+  entry: "./src/server/index.ts",
+  target: "node",
+  module: {
+    rules: [
+      {
+        test: /\.tsx?$/,
+        use: "ts-loader",
+        exclude: /node_modules/,
+      },
+    ],
+  },
+  resolve: {
+    extensions: [".tsx", ".ts", ".js"],
+  },
+  output: {
+    filename: "index.js",
+    path: path.resolve(__dirname, "dist"),
+  },
+};
+
+module.exports = [clientConfig, serverConfig];
+```
+
+> Estamos configurando o webpack para gerar dois arquivos, um para o client e outro para o server. O arquivo do client vai ser gerado na pasta `dist/public` e o do server na pasta `dist`.
+
+## Melhorando o ambiente de desenvolvimento
+
+Para facilitar nossa vida vamos instalar duas libs que são ótimas no ambiente de desenvolvimento. A primeira é a `nodemon` que vai ficar observando nossos arquivos e reiniciando o servidor sempre que houver alguma alteração. A segunda é a `concurrently` que vai nos permitir rodar o webpack e o nodemon ao mesmo tempo utilizando um só comando. Para instalar as dependências rode o comando:
+```bash
+yarn add --dev nodemon concurrently
+```
+
+Com as libs instaladas, bora criar nosso primeiro script. No seu `package.json`, adicione:
+```json
+  "scripts": {
+    "dev": "webpack && concurrently \"webpack --watch\" \"nodemon dist\""
+  },
+```
+
+E seu tudo deu certo, agora é só rodar `yarn dev` e temos um counter funcionando:
+![Imagem mostrando o counter funcionando](/uploads/react-express-counter-working.png)
+
+# Streaming SSR
+
+Vamos dar um passo além e fazer o streaming do SSR, funcionalidade que é o coração do React Server Components. Primeiro vamos alterar nossa rota do express para funcionar como um socket e nossa resposta vai ser um stream. Para isso vamos utilizar o método [`ReactDOMServer.renderToPipeableStream`](https://react.dev/reference/react-dom/server/renderToPipeableStream). Altere o arquivo `src/server/index.ts` para o seguinte:
+
+```ts
+// ...
+app.get('/', (req, res) => {
+  res.socket.on('error', (error) => console.log('Fatal', error));
+
+  let didError = false;
+  const stream = ReactDOMServer.renderToPipeableStream(
+      React.createElement(App),
+      {
+          bootstrapScripts: ['/bundle.js'],
+          onShellReady: () => {
+              res.statusCode = didError ? 500 : 200;
+              res.setHeader('Content-type', 'text/html');
+              stream.pipe(res);
+          },
+          onError: (error) => {
+              didError = true;
+              console.log(error);
+          } 
+      }
+  );
+});
+// ...
+```
+
+E também vamos criar nosso componente que será renderizado no lado do servidor. Crie um novo arquivo `src/client/HeavyComponent.tsx` com o seguinte conteúdo:
+
+```tsx
+import React from "react";
+let status = "pending";
+let result = null;
+
+const asyncFunc = (func: Promise<any>) => {
+  const fetching = func
+    .then((success) => {
+      status = "fulfilled";
+
+      result = success;
+    })
+    .catch((error) => {
+      status = "rejected";
+
+      result = error;
+    });
+
+  if (status === "pending") {
+    throw fetching;
+  } else if (status === "rejected") {
+    throw result;
+  } else if (status === "fulfilled") {
+    return result;
+  }
+};
+
+export default function HeavyComponent() {
+  const data = asyncFunc(getData());
+
+  async function getData() {
+    await new Promise((resolve) => setTimeout(resolve, 5000));
+    return { username: "obj" };
+  }
+  return (
+    <div>
+      <h3>Demorei mas carreguei!</h3>
+      <p>{JSON.stringify(data)}</p>
+    </div>
+  );
+}
+```
+
+Declaramos a variável `status="pending"` que será utilizada para informar ao React o estado da promessa. Enquanto estiver pendente o React vai renderizar o fallback da [`Suspense API`]().
+
+A função `asyncFunc` é uma função que simula uma chamada assíncrona. Ela recebe uma promise e retorna o resultado dela. Se a promise ainda não foi resolvida, ela lança um erro que é capturado pelo React e renderiza o fallback. Se a promise já foi resolvida, ela retorna o resultado. 
+
+Finalmente nossa função que busca os dados. Ela é uma função assíncrona que espera 5 segundos e retorna um objeto com o [meu username](https://www.instagram.com/itsmicaio/).
+
+Pra gente conseguir ver a magica acontecendo, vamos utilizar a [`Suspense API`]() junto com o `HeavyComponent`. Altere o arquivo `App.tsx` para o seguinte:
+
+```tsx
+import React, { lazy, Suspense } from "react";
+const HeavyComponent = lazy(() => import("./HeavyComponent"));
+
+export const App = () => {
+  return (
+    <div id="root">
+      <h1>Test suspense</h1>
+      <Suspense fallback={<h3>Carregando...</h3>}>
+        <HeavyComponent />
+      </Suspense>
+      <Counter />
+    </div>
+  );
+};
+```
+
+E é só dar um reload na página e vamos conseguir ver nosso componente sendo carregado e posteriormente renderizado na página:
+
+![Imagem mostrando o componente sendo carregado](/uploads/react-express-streaming-ssr.png)
+
+## Explicando o HTML final
+
+Se você olhar o HTML final que foi gerado, vai ver que ele está bem diferente do que a gente tinha antes. Agora temos um comentário `<!--$?-->` que indica o inicio do nosso componente e um comentário `<!--/$-->` que indica o fim do nosso componente. E no meio desses comentários temos um template com um id que é onde o nosso componente deve ser inserido após o carregamento. 
+
+```html
+<div>
+    <h1>Test suspense</h1>
+    <!--$?-->
+    <template id="B:0"></template>
+    <h3>Carregando...</h3>
+    <!--/$-->
+    <div id="counter">
+        <h1>Counter: 
+        <!-- -->
+        0</h1>
+        <button>Counter</button>
+    </div>
+</div>
+<script src="/bundle.js" async=""></script>
+<div hidden id="S:0">
+    <div>
+        <h3>Demorei mas carreguei!</h3>
+        <p>{&quot;username &quot;:&quot;itsmicaio &quot;}</p>
+    </div>
+</div>
+<script>
+    function $RC(a, b) {
+        a = document.getElementById(a);
+        b = document.getElementById(b);
+        b.parentNode.removeChild(b);
+        if (a) {
+            a = a.previousSibling;
+            var f = a.parentNode
+              , c = a.nextSibling
+              , e = 0;
+            do {
+                if (c && 8 === c.nodeType) {
+                    var d = c.data;
+                    if ("/$" === d)
+                        if (0 === e)
+                            break;
+                        else
+                            e--;
+                    else
+                        "$" !== d && "$?" !== d && "$!" !== d || e++
+                }
+                d = c.nextSibling;
+                f.removeChild(c);
+                c = d
+            } while (c);
+            for (; b.firstChild; )
+                f.insertBefore(b.firstChild, c);
+            a.data = "$";
+            a._reactRetry && a._reactRetry()
+        }
+    }
+    ;$RC("B:0", "S:0")
+</script>
+```
+
+No final do HTML também temos um script que é responsável por fazer a inserção do nosso componente no HTML. Ele basicamente pega o template com o id `B:0` e substitui pelo conteúdo da div com o id `S:0` que é justamente o componente carregado no servidor. 
+
+# Conclusão
+
+Viu só que legal? Deu pra entender de forma mais profunda como funciona as formas de renderização de React e algumas implementações que estão acontecendo por de baixo dos panos em ferramentas como NextJS e Gatsby. É claro que essa é uma implementação bem simples e não recomendo que você utilize em produção, mas é uma ótima forma de entender como as coisas funcionam. 
+
+Você pode ver o [código completo no github](https://github.com/itsmicaio/react-ssr) e também pode ver o artigo que fiz explicando o [Universo de renderização do React](/post/universo-de-renderizacao-com-react/). Fui :p
