@@ -12,7 +12,10 @@ const components = {
     return (
       <Highlight code={code} language={language} theme={AppPrismTheme}>
         {({ className, style, tokens, getLineProps, getTokenProps }) => (
-          <pre className={`${className} p-2 max-w-lg w-screen overflow-x-auto`} style={style}>
+          <pre
+            className={`${className} p-2 max-w-lg w-screen overflow-x-auto`}
+            style={style}
+          >
             <div className="bg-green w-fit px-2 py-1 text-white -mt-2 mb-1">
               {language.toUpperCase()}
             </div>
@@ -30,32 +33,13 @@ const components = {
   },
   code: (props: any) => {
     return (
-      <Highlight
-        code={props.children}
-        language={"javascript"}
-        theme={AppPrismTheme}
-      >
-        {({ className, style, tokens, getLineProps, getTokenProps }) => (
-          <code className={`${className}`} style={style}>
-            {tokens.map((line, i) => (
-              <span {...getLineProps({ line, key: i })}>
-                {line.map((token, key) => (
-                  <span {...getTokenProps({ token, key })} />
-                ))}
-              </span>
-            ))}
-          </code>
-        )}
-      </Highlight>
+      <code className="bg-gray-200 px-1 text-green italic">
+        {props.children}
+      </code>
     );
   },
   a: (props: any) => {
-    return (
-      <a
-        {...props}
-        target="_blank"
-      />
-    );
+    return <a {...props} target="_blank" />;
   },
   wrapper: ({ children }: any) => <>{children}</>,
 };
