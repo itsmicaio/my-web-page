@@ -33,7 +33,7 @@ export const onCreateNode: GatsbyNode["onCreateNode"] = ({
     createNodeField({
       node,
       name: "slug",
-      value: `post/${slug.slice(12)}`,
+      value: `/post/${slug.slice(12)}`,
     });
   }
 };
