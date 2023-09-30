@@ -23,9 +23,15 @@ const IndexPage: React.FC<IProps> = ({ data }) => {
           <h1 className="text-white text-2xl">Caio Fuzatto</h1>
         </Link>
         <div className="flex w-full gap-5 justify-center my-3">
-          <FaLinkedin className="h-9 w-9" />
-          <FaGithub className="h-9 w-9" />
-          <FaInstagram className="h-9 w-9" />
+          <a href="https://www.linkedin.com/in/itsmicaio/" target="_blank">
+            <FaLinkedin className="h-9 w-9" />
+          </a>
+          <a href="https://github.com/itsmicaio" target="_blank">
+            <FaGithub className="h-9 w-9" />
+          </a>
+          <a href="https://www.instagram.com/itsmicaio/" target="_blank">
+            <FaInstagram className="h-9 w-9" />
+          </a>
         </div>
       </header>
       <main>
