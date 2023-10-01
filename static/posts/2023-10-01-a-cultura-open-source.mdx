@@ -1,0 +1,118 @@
+---
+layout: article
+title: "A cultura open-source"
+date: 2023-10-01
+tags:
+  - tech
+---
+
+A cultura open-source é uma cultura de compartilhamento de código. É uma cultura onde as pessoas compartilham o código que elas escrevem para que outras pessoas possam usar, estudar, modificar e principalmente contribuir para que o projeto cresça.
+
+## Por que contribuir?
+
+Bom cada um tem um motivo para contribuir, mas eu vou listar alguns motivos que me fazem contribuir mesmo que esporadicamente.
+
+**Adicionar uma feature em um projeto que eu uso**: já teve situações, inclusive no meu trampo em que precisei de uma feature em um projeto que eu usava e não tinha no projeto. Então eu fiz a feature e abri um PR para o projeto.
+
+**Contribuir com a comunidade**: contribuir com projetos open-source é uma forma de contribuir com a comunidade. Você está ajudando outras pessoas que usam o projeto.
+
+**Aprender**: contribuir com projetos open-source é uma ótima forma de aprender. Você aprende a usar o git, a trabalhar em equipe, a escrever código de qualidade, a escrever testes, a documentar o código, etc.
+
+**Promover a empresa**: vejo muitas empresas criando projetos open-source como forma de promover seus produtos e serviços, como é o caso do NextJS da Vercel.
+
+### Hacktoberfest
+
+O Hacktoberfest é um evento anual que acontece no mês de outubro (olha que incrível, estamos em outubro :D) e tem como objetivo incentivar as pessoas a contribuírem com projetos open-source. Para participar do evento, você pode se inscrever na [página do evento](https://hacktoberfest.com/) e fazer 4 PRs em projetos open-source no Github marcados com o [tópico Hacktoberfest](https://github.com/topics/hacktoberfest).
+
+> Esse evento me inspirou a trazer esse artigo. Eu já participei do eventos em outras edições e esse ano eu estou participando novamente.
+
+## Como contribuir
+
+Contribuir com projetos open-source é mais fácil do que parece. Nesse post eu vou mostrar como contribuir com projetos open-source no Github.
+
+### Faça o fork do projeto
+
+Para começar a contribuir com um projeto open-source, você precisa fazer o fork do projeto. Para isso, basta clicar no botão `fork` no canto superior direito da página do projeto no Github.
+
+Nesse exemplo eu estou fazendo um fork do projeto [tldr](https://github.com/tldr-pages/tldr).
+
+![Painel do github exibindo o botão fork](/uploads/open-source-fork.png)
+
+> Fazer um *fork* é como fazer uma cópia do projeto para a sua conta do Github.
+
+### Clone o projeto
+
+Depois de fazer o fork, você precisa clonar o projeto para a sua máquina. Para isso, basta copiar o link do projeto e executar o comando `git clone` no terminal.
+
+No meu caso o comando ficou `git clone git@github.com:itsmicaio/tldr.git`
+
+![Painel do github exibindo o link do projeto](/uploads/open-source-clone.png)
+
+### Crie uma branch
+
+Agora que você já tem o projeto na sua máquina, você precisa criar uma branch para fazer as alterações. Para isso, basta executar o comando `git checkout -b nome-da-branch`.
+
+### Hora de codar
+
+Agora é hora de desenvolver. Faça as alterações que você deseja e depois execute o comando `git add .` para adicionar as alterações ao stage. Depois execute o comando `git commit -m "Mensagem do commit"` para fazer o commit das alterações. E por último, execute o comando `git push origin nome-da-branch` para enviar as alterações para o Github.
+
+> Você também pode fazer contribuições sem código. No meu exemplo estou apenas fazendo uma tradução para pt-BR no projeto tldr. No mundo open, toda ajuda é bem vinda e você pode contribuir com documentação, testes, etc.
+
+### Abra o pull request
+
+Agora que você já fez as alterações e enviou para o Github, você precisa abrir um pull request. Para isso, basta clicar no botão `Compare & pull request` na página do seu fork.
+
+![Painel do github exibindo o botão compare & pull request](/uploads/open-source-compare-pr.png)
+
+Hora de escrever o título e a descrição do PR. A maioria dos projetos open-source tem um template para o título e a descrição do PR. Então é importante ler o template atentamente antes de abrir o PR. Veja o exemplo do template do projeto tldr:
+
+```markdown
+<!--
+Thank you for contributing!
+Please fill in the following checklist, removing items that do not apply.
+See also https://github.com/tldr-pages/tldr/blob/main/CONTRIBUTING.md
+-->
+
+- [x] The page(s) are in the correct platform directories: `common`, `linux`, `osx`, `windows`, `sunos`, `android`, etc.
+- [x] The page(s) have at most 8 examples.
+- [x] The page description(s) have links to documentation or a homepage.
+- [x] The page(s) follow the [content guidelines](/tldr-pages/tldr/blob/main/CONTRIBUTING.md#guidelines).
+- [x] The PR title conforms to the recommended [templates](/tldr-pages/tldr/blob/main/CONTRIBUTING.md#commit-message).
+- **Version of the command being documented (if known):**
+```
+
+Depois de preencher as informações, basta clicar no botão `Create pull request`.
+
+![Painel do github exibindo o formulário de pull request](/uploads/open-source-create-pr.png)
+
+Veja meu [PR aberto no projeto tldr](https://github.com/tldr-pages/tldr/pull/10767)
+
+## Cuidados a abrir um PR
+
+Antes mesmo de iniciar o desenvolvimento, é importante você ficar atento a regras do projeto. Cada comunidade tem sua forma de trabalhar e seguir os padrões é importante para ter um PR aceito.
+
+### Siga as regras do projeto
+
+Cada projeto tem suas regras para contribuição. Então é importante ler as regras antes de abrir um PR. Normalmente você vai achar as regras no arquivo `CONTRIBUTING.md` na raiz do projeto.
+
+![Montagem mostra várias páginas de projetos open-source com o arquivo CONTRIBUTING.md aberto](/uploads/open-source-contributing.png)
+
+### Contributor License Agreement (CLA)
+
+Projetos maiores geralmente tem um CLA. O CLA é um contrato que você assina para contribuir com o projeto. O CLA é importante para proteger o projeto e os contribuidores. Assim que você abrir o PR, o CLA assistant vai verificar se você assinou e caso contrário vai comentar no PR para você assinar.
+
+![Painel do github exibindo o comentário do CLA assistant](/uploads/open-source-cla-request.png)
+
+Ao clicar no link você será levado para uma página onde você terá acesso aos termos do contrato e poderá assinar utilizando sua conta do Github.
+
+![Painel do CLA assistant exibindo os termos do contrato](/uploads/open-source-cla-rules.png)
+
+## patch-package
+
+O [patch-package](https://www.npmjs.com/package/patch-package) é uma ferramenta que permite você fazer alterações em projetos que você não é o dono e nem quer esperar todo o tramite de aceite de PR. O bacana e que você pode enviar essas alterações para o Github e o criar automaticamente a PR, essa ferramenta é fantástica e eu uso bastante.
+
+**Se você quiser aprender mais sobre essa lib, fica ligado que semana que vem sai um post sobre o patch-package**.
+
+## Conclusão
+
+Contribuir com projetos open-source é uma ótima forma de aprender, ajudar a comunidade e promover a empresa. E contribuir com projetos open-source é mais fácil do que parece. Basta seguir os passos que eu mostrei nesse post e você vai conseguir contribuir com projetos open-source. Fui :)
