@@ -34,8 +34,8 @@ const IndexPage: React.FC<IProps> = ({ data }) => {
           </a>
         </div>
       </header>
-      <main>
-        <div className="border-b border-solid pb-1 px-1">
+      <main className="max-w-lg">
+        <div className="border-b border-solid pb-1 px-1 ">
           <span className="text-lg">Últimos artigos</span>
         </div>
         <ul className="pl-0 w-full flex flex-col items-center gap-2">
@@ -53,7 +53,7 @@ const IndexPage: React.FC<IProps> = ({ data }) => {
             </li>
           ))}
         </ul>
-        <div className="flex w-screen justify-center">
+        <div className="flex w-full justify-center">
           <Link to="/" className="underline cursor-pointer">
             Ver tudo
           </Link>
