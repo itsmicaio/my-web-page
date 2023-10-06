@@ -12,16 +12,16 @@ const IndexPage: React.FC<IProps> = ({ data }) => {
     <div className="text-gray-600">
       <Header />
 
-      <main>
-        <ul className="pl-0 w-full flex flex-col items-center">
+      <main className="flex flex-col items-center">
+        <ul className="pl-0 w-full max-w-2xl">
           {posts.map((post) => (
             <li
               key={post.node.id}
-              className="group hover:bg-gray-200 font-thin max-w-lg mb-2 px-1"
+              className="group hover:bg-gray-200 font-thin w-full mb-2 px-4 news:px-0"
             >
               <a className="block py-4" href={post.node.fields.slug}>
-                <div className="flex items-center">
-                  <h1 className="text-sm font-semibold group-hover:text-green mr-2">
+                <div className="flex flex-col news:flex-row">
+                  <h1 className="text-lg font-semibold group-hover:text-green mr-2">
                     {post.node.frontmatter.title}
                   </h1>
                   <ListTags tags={post.node.frontmatter.tags} maxTags={3} />

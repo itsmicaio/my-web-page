@@ -13,14 +13,14 @@ const components = {
       <Highlight code={code} language={language} theme={AppPrismTheme}>
         {({ className, style, tokens, getLineProps, getTokenProps }) => (
           <pre
-            className={`${className} p-2 max-w-lg w-screen overflow-x-auto`}
+            className={`${className} p-2 w-full overflow-x-auto my-7`}
             style={style}
           >
             <div className="bg-green w-fit px-2 py-1 text-white -mt-2 mb-1">
               {language.toUpperCase()}
             </div>
             {tokens.map((line, i) => (
-              <div {...getLineProps({ line, key: i })}>
+              <div {...getLineProps({ line, key: i })} className="mb-2">
                 {line.map((token, key) => (
                   <span {...getTokenProps({ token, key })} />
                 ))}

@@ -20,15 +20,19 @@ const PostTemplate: React.FC<IProps> = ({ data, children }) => {
       <Header />
 
       <article className="pl-0 w-full flex flex-col items-center mb-7">
-        <div className="max-w-lg w-screen">
-          <h1 className="font-bold text-2xl">{frontmatter.title}</h1>
-          <span className="text-sm">{frontmatter.date}</span>
+        <div className="w-full max-w-2xl">
+          <h1 className="font-bold text-2xl mx-4 news:mx-0">
+            {frontmatter.title}
+          </h1>
+          <span className="text-sm mx-4 news:mx-0">{frontmatter.date}</span>
 
           <MDXProvider>
             <div className="mdx">{children}</div>
           </MDXProvider>
 
-          <ListTags tags={frontmatter.tags} />
+          <div className="mx-4 news:mx-0">
+            <ListTags tags={frontmatter.tags} />
+          </div>
         </div>
       </article>
     </div>
