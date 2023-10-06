@@ -9,7 +9,7 @@ type IProps = { data: Posts };
 const IndexPage: React.FC<IProps> = ({ data }) => {
   const posts = data.allMdx.edges;
   return (
-    <div className="text-white font-serif bg-green h-screen w-screen flex flex-col items-center">
+    <div className="text-white bg-green h-screen w-screen flex flex-col items-center">
       <header className="py-2">
         <Link
           className="flex flex-col justify-center items-center gap-2"

@@ -16,7 +16,7 @@ const PostTemplate: React.FC<IProps> = ({ data, children }) => {
   const { mdx } = data;
   const { frontmatter } = mdx;
   return (
-    <div className="text-gray-600 font-serif">
+    <div className="text-gray-600">
       <Header />
 
       <article className="pl-0 w-full flex flex-col items-center mb-7">

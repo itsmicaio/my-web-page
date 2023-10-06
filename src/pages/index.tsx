@@ -9,7 +9,7 @@ type IProps = { data: Posts };
 const IndexPage: React.FC<IProps> = ({ data }) => {
   const posts = data.allMdx.edges;
   return (
-    <div className="text-gray-600 font-serif">
+    <div className="text-gray-600">
       <Header />
 
       <main>
