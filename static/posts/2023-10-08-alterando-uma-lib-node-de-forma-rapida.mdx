@@ -1,0 +1,146 @@
+---
+layout: article
+title: "Alterando uma lib Node de forma rápida"
+date: 2023-10-08
+tags:
+  - nodejs
+---
+
+Você já se deparou com um bug chato na lib que você instalou para resolver os seus problemas? Aquele bug que depois de procurar bastante você caiu numa issue do github onde descobriu que era um defeito na lib? Ou seu PO te pediu algo que a lib não faz e você não quer esperar o pull request ser aceito pra poder continuar o desenvolvimento?
+
+A ideia hoje é aprender como fazer um patch de uma alteração sua em uma lib, e também aprender a buildar sua lib corretamente com suas alterações, bora la?
+
+## Lib patch-package
+
+Durante muito tempo o [patch-package](https://github.com/ds300/patch-package#readme) foi a solução mais utilizada para resolver esse problema. Ele é um pacote que permite que você faça alterações em libs que você instalou via npm, e que essas alterações sejam aplicadas toda vez que alguém rodar o comando `npm install` no seu projeto.
+
+Para começar a usar o patch-package, você precisa instalar ele no seu projeto:
+```bash
+yarn add patch-package postinstall-postinstall
+```
+
+E adicionar um script no seu `package.json`:
+```json
+"scripts": {
+  "postinstall": "patch-package"
+}
+```
+
+> O `postinstall-postinstall` é um pacote que vai executar o comando `patch-package` toda vez que alguém rodar o comando `npm install` no seu projeto.
+
+Agora você pode fazer as alterações que você quiser na lib e depois é só rodar o comando `yarn patch-package <nome da lib>` que o patch-package vai criar um arquivo `.patch` com as alterações que você fez.
+
+![Imagem mostrando o output do comando patch-package](/uploads/patch-package-success.png)
+
+Além disso, uma das vantagens que eu gosto muito do patch-package é o a flag `--create-issue` que abre uma página com uma issue em draft no github da lib que você está alterando. Assim você pode abrir uma issue com a sua alteração e quem sabe ela não é aceita e você não precisa mais fazer o patch?
+
+![Imagem mostrando a edição da issue no github](/uploads/patch-package-github-issue.png)
+
+Se quiser saber mais sobre contribuições em projetos open-source da uma olhada la no último artigo sobre [A cultura open-source](/post/a-cultura-open-source).
+
+## Yarn V2
+
+O [Yarn V2](https://yarnpkg.com/migration/overview) também trás uma solução nativa para resolver esse problema, o [patch](https://yarnpkg.com/cli/patch). Com ele você consegue fazer a mesma coisa que o patch-package, mas de forma nativa. Bora vê como funciona!
+
+Provavelmente você ainda não deve estar utilizando o Yarn V2 em nenhum dos seus projetos, então comece configurando a nova versão:
+```bash
+yarn set version berry && yarn install
+```
+
+Isso vai instalar a V2 e vai adicionar o arquivo `.yarnrc.yml` na raiz do seu projeto, além da pasta `.yarn` que vai conter os arquivos de cache do Yarn.
+
+Para começar digite o comando patch e o nome da lib que você quer alterar, no meu caso será a `@adminjs/passwords`:
+```bash
+yarn patch @adminjs/passwords
+```
+Você verá um output parecido com esse:
+![Imagem mostrando a resposta do comando yarn patch](/uploads/yarn-patch-private-folder.png)
+
+Olha que legal, o yarn criou uma pasta que contém todos os arquivos da lib, e você pode fazer as alterações necessárias para resolver o seu problema. Para o tutorial eu vou só adicionar um `console.log("teste")` só para gente ver o resultado.
+
+![Imagem mostrando a alteração feita no arquivo](/uploads/yarn-patch-edit-lib.png)
+
+Terminou as alterações? Hora de "salvar" as alterações e aplicar o patch:
+```bash
+yarn patch-commit -s <caminho da pasta gerada pelo yarn>
+```
+
+Com esse comando o yarn vai criar um arquivo `.yarn/patches/<nome da lib>.patch` com as alterações que você fez. Olha como ficou o meu:
+
+```diff
+diff --git a/src/bundle-component.ts b/src/bundle-component.ts
+index 28a36f32426f984f7aac103a3a45775671ab7891..d5d727e2b4059b2e4d2aa24be650a8bef374b306 100644
+--- a/src/bundle-component.ts
++++ b/src/bundle-component.ts
+@@ -12,6 +12,7 @@ const bundleComponent = (
+   componentName: string,
+ ) => {
+   const componentPath = path.join(__dirname, `./components/${componentName}`)
++  console.log("teste")
+   return loader.add(componentName, componentPath)
+ }
+```
+
+Agora é só commitar esse arquivo e pronto, toda vez que alguem rodar yarn install no seu projeto as alterações serão aplicadas na LIB.
+
+## pnpm
+
+Se você navegou na net pelos últimos dias, você deve conhecer o [pnpm](https://pnpm.js.org/), um gerenciador de pacotes que promete ser mais rápido que o Yarn e o NPM. Ele também tem uma solução nativa para resolver esse problema, o [patch](https://pnpm.js.org/en/cli/patch).
+
+Assim como no Yarn aqui também temos o comando `pnpm patch <nome da lib>` que vai criar uma pasta com os arquivos da lib para você alterar.
+
+Também podemos aproveitar a própria `node_modules` para fazer nossas mudanças, sem precisar criar uma pasta nova e além disso conseguindo testar a alteração diretamente no seu projeto. É só especificar a pasta no comando o `patch-commit`, como no exemplo abaixo:
+```bash
+pnpm patch-commit node_modules/@adminjs/passwords
+```
+
+## Buildando a Lib
+
+A gente adicionou o `console.log("teste")` na pasta `src` do projeto mas o log não está sendo exibido quando você roda o projeto. Isso acontece porque o arquivo `src` não é o que está sendo executado, e sim o `dist` ou `build`. Então vamos buildar a lib para que as alterações sejam aplicadas.
+
+No seu terminal caminhe até a pasta da lib na node modules. No meu caso o comando ficou assim:
+```bash
+cd node_modules/@adminjs/passwords
+```
+
+Agora precisamos instalar as dependências da lib na pasta dela, para isso vamos usar o comando `pnpm install` e depois disso basta rodar o comando `pnpm build` para buildar a lib.
+```bash
+pnpm install && pnpm build
+```
+
+Agora quando você rodar o projeto você vai ver a alteração acontecendo.
+
+Agora você pode usar os comandos de `patch` apontando para a pasta da lib na node_modules e a alteração ficará salva. Veja o novo arquivo de patch com o `console.log` em dois arquivos diferentes:
+```diff
+diff --git a/build/bundle-component.js b/build/bundle-component.js
+index 9ac9a32d7a3f412fd0e8a90441fd0c35ec694e0e..f7e4ef64101ea60e17eaad74b4f42f789b695747 100644
+--- a/build/bundle-component.js
++++ b/build/bundle-component.js
+@@ -5,6 +5,7 @@ const __dirname = url.fileURLToPath(new URL('.', import.meta.url));
+ // eslint-disable-next-line @typescript-eslint/explicit-module-boundary-types
+ const bundleComponent = (loader, componentName) => {
+     const componentPath = path.join(__dirname, `./components/${componentName}`);
++    console.log("teste");
+     return loader.add(componentName, componentPath);
+ };
+ export default bundleComponent;
+diff --git a/src/bundle-component.ts b/src/bundle-component.ts
+index 28a36f32426f984f7aac103a3a45775671ab7891..d5d727e2b4059b2e4d2aa24be650a8bef374b306 100644
+--- a/src/bundle-component.ts
++++ b/src/bundle-component.ts
+@@ -12,6 +12,7 @@ const bundleComponent = (
+   componentName: string,
+ ) => {
+   const componentPath = path.join(__dirname, `./components/${componentName}`)
++  console.log("teste")
+   return loader.add(componentName, componentPath)
+ }
+ 
+
+```
+
+> Lembre-se de dar commit do arquivo de patch gerado, só assim você conseguirá reutilizar em futuras instalações.
+
+## Conclusão
+
+Hoje vimos como fazer um patch de uma lib e como buildar ela para que as alterações sejam aplicadas. Também vimos que o Yarn V2 e o pnpm tem soluções nativas para esse problema, e que o patch-package ainda é uma boa solução para quem não quer migrar para o Yarn V2 ou pnpm.
