@@ -1,0 +1,157 @@
+---
+layout: article
+title: "AdminJS: diga adeus aos templates de backoffice"
+date: 2023-10-23
+tags:
+  - nodejs
+  - frontend
+  - backend
+---
+
+Fala galera, hoje é dia de falar sobre AdminJS no meetup [js-vix](https://www.eventbrite.com.br/e/js-vix-tickets-741027963587), então como é de costume, vou escrever minha palestra em forma de artigo para impactar mais pessoas.
+
+## O que é o AdminJS?
+
+Sendo bem direto, AdminJS é uma ferramenta poderosíssima escrito inteiramente em NodeJS, utilizando React como biblioteca de frontend, que cria o backoffice e APIs a partir do )_schema_ do seu banco de dados. Incrível né?
+
+Dois pontos fortes do AdminJS é que ele é 100% modularizado, ou seja, você pode utilizar apenas os módulos que você precisa, e ele é totalmente customizável, você pode customizar desde o tema até os componentes. Da uma olhada nessas funcionalidades:
+
+- Autenticação;
+- Criação de CRUDs;
+- Geração de relatórios CSV e PDF;
+- Exibição de gráficos e mapas;
+- Internacionalização (i18n);
+
+![Montagem mostrando várias listagens de módulos do AdminJS](/uploads/adminjs-modules.png)
+
+E tudo isso permitindo você customizar do jeito que o negócio precisa! Incrível né? Bora ver algumas dessas funcionalidades.
+
+## Como começar com AdminJS?
+
+O setup do projeto é bem rápido e pra iniciar você precisa escolher seu banco de dados, orm e um framework http.
+
+![Imagem mostrando os banco de dados, orm e framework http suportados pelo AdminJS](/uploads/adminjs-db-orm-frameworks.png)
+
+Após definir tudo isso, eu preparei um tutorial passo a passo dos primeiros passos com AdminJS: [Iniciando um backoffice rapidamente com AdminJS](/post/iniciando-um-backoffice-rapidamente-com-adminjs/).
+
+## Criação de CRUDs
+
+No AdminJS cada entidade do seu banco de dados é chamada de recurso, e cada recurso tem por padrão tem um CRUD completo, com listagem, criação, edição e exibição.
+
+![Imagem mostrando a listagem de usuários no AdminJS](/uploads/adminjs-list-movies.png)
+
+Você pode customizar cada recurso da forma que você optar:
+- Alterar o tipo de input do campo;
+- Adicionar validações;
+- Bloquear a edição de campos;
+- Criar ações extras como um botão "Enviar email", para uma entidade de usuário;
+- Alterar o ícone e a exibição do recurso no menu;
+
+### Formulários
+
+Como todo bom CRUD que se prese precisamos de formulários, e o AdminJS tem uma série de componentes para facilitar a criação de formulários, com campos tipo _select_ e _date_, além de suportar listas (arrays) e objetos aninhados.
+
+![Montagem mostrando partes de formulários gerados pelo AdminJS](/uploads/adminjs-forms.png)
+
+## Customização de componentes
+
+Uma das features fantásticas que o AdminJS tem é a possibilidade de customizar os componentes. Isso é muito útil quando você precisa criar um componente que não existe no AdminJS ou quando você precisa customizar um componente existente, e você pode escrever seus componentes em React.
+
+Eu fiz por exemplo um componente dinâmico que pode ser usado com qualquer campo do tipo *number*, que formata o valor em real(R$):
+
+![Imagem mostrando o componente em listagem e exibição](/uploads/adminjs-component-currencyvalue.png)
+
+Uma coisa que facilita muito na hora de criar o componente é utilizar a tipagem do typescript com a interface `BasePropertyProps` que é exportada pelo AdminJS. Essa interface contém as propriedades que o AdminJS passa para o componente, como o `record` que contém os dados do registro, o `property` que contém as informações da propriedade, como o nome, tipo, etc, e o `where` que contém a localização do componente, se é na listagem, exibição, etc.
+
+```tsx
+import React from "react";
+import { useTranslation } from "adminjs";
+import styled from "styled-components";
+import { BasePropertyProps } from "adminjs";
+
+export const CurrencyValue: React.FC<BasePropertyProps> = (props) => {
+  const {
+    record,
+    property: { propertyPath },
+    where,
+  } = props;
+  const { translate } = useTranslation();
+  const value = record.params[propertyPath];
+
+  const TitleLabel = styled.label`
+    display: block;
+    font-size: 12px;
+    color: rgb(137, 138, 154);
+    margin-bottom: 4px;
+    font-weight: 300;
+  `;
+
+  const ValueLabel = styled.label`
+    padding-right: 8px;
+  `;
+
+  const Section = styled.section`
+    ${(props) => props.mb ? "margin-bottom: 24px;" : ""}
+  `;
+
+  const formatPrice = (price: number) => {
+    return price.toLocaleString("pt-BR", {
+      style: "currency",
+      currency: "BRL",
+    });
+  };
+
+  return (
+    <Section mb={where == "show"}>
+      {where == "show" && (
+        <TitleLabel>{translate(`properties.${propertyPath}`)}</TitleLabel>
+      )}
+      <ValueLabel>{formatPrice(value)}</ValueLabel>
+    </Section>
+  );
+};
+
+export default CurrencyValue;
+```
+
+Veja no código como eu utilizei o `where` para saber se o componente está sendo usado na listagem ou na exibição, e assim eu posso exibir o título do campo apenas na exibição e o `propertyPath` para saber qual é o nome da propriedade que está sendo usada.
+
+Além disso o AdminJS trás uma série de outras APIs e funcionalidade para ajudar a customizar o componente, você pode ver mais sobre isso no tutorial [Writing your own components](https://docs.adminjs.co/ui-customization/writing-your-own-components).
+
+## Temas
+
+Além de componentes, também podemos [customizar o tema do AdminJS](https://docs.adminjs.co/basics/themes), e isso é muito útil quando você precisa criar um backoffice com a identidade visual da sua empresa. Já existe o módulo [@adminjs/themes](https://github.com/SoftwareBrothers/adminjs-themes) que trás os temas _light_ (tema padrão), _dark_ e _no-sidebar_.
+
+- Valores configurados no sistema (como cores _primary_ e _secondary_, bordas, tamanhos e etc...);
+- Componentes (inputs, labels e etc...);
+- Estilização com CSS;
+- Código Javascript com estilização de front-end;
+
+Veja esse exemplo de um tema customizado que fiz para um side project meu:
+![Imagem mostrando tema customizado do projeto Self Club](/uploads/adminjs-theme-self-club.png)
+
+Uma dica boa para quem quer construir um tema é ver a [implementação dos temas padrões](https://github.com/SoftwareBrothers/adminjs-themes/tree/main/src/themes), e também utilizar o [CLI que ajuda a desenvolver os temas](https://docs.adminjs.co/basics/themes#cli).
+
+## Autenticação e autorização
+
+O AdminJS por padrão já vem com a funcionalidade de autenticação, bastando fazer uma configuração para passar a funcionar. O bacana é que você pode customizar a função de autenticação, e assim utilizar o seu sistema de autenticação já existente como um Active Directory.
+
+![Imagem mostrando a tela de login do AdminJS](/uploads/adminjs-login.png)
+
+Além disso você pode ativar o controle de acesso, que não é uma funcionalidade do AdminJS, mas eles deixaram um [tutorial na doc para ajudar a implementar](https://docs.adminjs.co/tutorials/adding-role-based-access-control).
+
+Você também pode utilizar a [funcionalidade de log `@adminjs/logger`](https://docs.adminjs.co/basics/features/logger) se precisar rastrear as ações dos usuários nos seus recursos.
+
+## Projeto open-source: contribua!
+
+Eu estava precisando de relatórios mais customizados para um projeto da firma, então fiz um ajuste simples no código do modulo `@adminjs/import-export` e aproveitei para abrir uma [PR com a funcionalidade](https://github.com/SoftwareBrothers/adminjs-import-export/pull/16). Veja abaixo ela funcionando:
+
+![Montagem mostrando a PR e a página de criação do relatório](/uploads/adminjs-pr-report-filters.png)
+
+> Mesmo sendo um projeto muito grande e com várias funcionalidades, você com certeza vai ter uma necessidade especifica que não existe ainda no AdminJS, e essa é sua melhor oportunidade de contribuir. 
+
+Se você tem interesse em contribuir mas não sabe por onde começar, da uma olhada no meu artigo sobre [A cultura open-source](/post/a-cultura-open-source/)
+
+## Conclusão
+
+AdminJS é uma ferramenta incrível, que pode te ajudar a criar um backoffice rapidamente, e com uma série de funcionalidades que vão te ajudar a criar um sistema único e customizado para o seu negócio. Se quiser dar os primeiros passos com o AdminJS, vai la no post [Iniciando um backoffice rapidamente com AdminJS](/post/iniciando-um-backoffice-rapidamente-com-adminjs/). Até a próxima!

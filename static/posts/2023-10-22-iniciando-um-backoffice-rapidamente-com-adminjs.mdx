@@ -1,0 +1,479 @@
+---
+layout: blog
+title: "Iniciando um backoffice rapidamente com AdminJS"
+date: 2023-10-22
+tags:
+  - typescript
+  - react
+---
+
+Na vida de um dev é praticamente obrigatório ter passado por uma task em que você precisava criar um backoffice para um sistema. Seja para um cliente ou para a própria empresa, é muito comum que seja necessário criar um painel de administração para gerenciar os dados do sistema. Hoje nós vamos configurar do 0 uma aplicação com o AdminJS, uma ferramenta que cria o backoffice para você.
+
+Esse post é um tutorial step-by-step do AdminJS. Se você tem interesse em conhecer mais a ferramenta antes de iniciar, sugiro ler o artigo [AdminJS: diga adeus a templates de backoffice](/post/adminjs-diga-adeus-aos-templates-de-backoffice/).
+
+## Iniciando o projeto
+
+Primeiro de tudo precisamos criar uma pasta (`mkdir setup-admins`) e iniciar o projeto node (`yarn init`). Após isso vamos instalar o AdminJS (`yarn add adminjs`) e o Typescript. Você pode copiar o comando abaixo e fazer tudo isso de uma vez só:
+
+```bash
+mkdir setup-admins && cd setup-admins && yarn init -y && yarn add adminjs typescript && yarn add -D ts-node tslib
+```
+
+Além disso também vou instalar o Typescript, e criar o arquivo `tsconfig.json` com o seguinte comando:
+
+```json
+{
+  "compilerOptions": {
+    "target": "ESNEXT",
+    "module": "NodeNext",
+    "moduleResolution": "nodenext",
+    "esModuleInterop": true,
+    "forceConsistentCasingInFileNames": true,
+    "strict": true,
+    "skipLibCheck": true
+  }
+}
+```
+
+Também será necessário adicionar o seguinte código no `package.json`:
+
+```json
+{
+  "type": "module",
+  "scripts": {
+    "start": "ts-node-esm app.ts"
+  }
+}
+```
+
+> O AdminJS suporte apenas [ECMAScript modules](https://nodejs.org/docs/latest-v18.x/api/esm.html), por isso precisamos adicionar o `type: module` no `package.json` e o `ts-node-esm` no `scripts`.
+
+## Configurando o AdminJS
+
+Agora você vai precisar escolher entre os diversos [plugins](https://docs.adminjs.co/installation/plugins) e [adapters](https://docs.adminjs.co/installation/adapters) que o AdminJS suporta. Essa decisão é importante para definir o framework http e o banco de dados que você vai utilizar na aplicação.
+
+![Imagem mostrando bancos de dados, orms e frameworks suportados](/uploads/adminjs-db-orm-frameworks.png)
+
+Eu vou de [Express](https://docs.adminjs.co/installation/plugins/express) e [MongoDb/Mongoose](https://docs.adminjs.co/installation/adapters/mongoose).
+
+### Configurando o framework HTTP (Express)
+
+```bash
+yarn add @adminjs/express express tslib express-formidable @types/express && yarn add -D @types/express 
+```
+
+Agora vamos criar o arquivo `app.ts` na raiz do projeto e colar o seguinte código:
+
+```typescript
+import AdminJS from 'adminjs'
+import AdminJSExpress from '@adminjs/express'
+import express from 'express'
+
+const PORT = 3000
+
+const start = async () => {
+  const app = express()
+
+  const admin = new AdminJS({})
+
+  const adminRouter = AdminJSExpress.buildRouter(admin)
+  app.use(admin.options.rootPath, adminRouter)
+
+  app.listen(PORT, () => {
+    console.log(`AdminJS iniciado em http://localhost:${PORT}${admin.options.rootPath}`)
+  })
+}
+
+start()
+```
+
+### Configuração do banco de dados (Mongoose)
+
+Vamos começar a configurar o banco de dados, para isso vamos utilizar o Mongoose. Primeiro vamos instalar as dependências:
+
+```bash
+yarn add mongoose @adminjs/moongose
+```
+
+Vamos começar a configuração registrando o adapter do Mongoose no AdminJS. Para isso vamos adicionar o seguinte código no topo arquivo `app.ts`:
+
+```typescript
+// outros imports [..]
+import * as AdminJSMongoose from '@adminjs/mongoose'
+
+AdminJS.registerAdapter({
+  Resource: AdminJSMongoose.Resource,
+  Database: AdminJSMongoose.Database,
+})
+// resto do código [...]
+```
+
+E dentro da função `start` vamos iniciar a conexão com o banco de dados:
+
+```typescript
+const start = async () => {
+  const app = express()
+  // adicione a linha abaixo no código
+  await mongoose.connect("<mongo db url>");
+
+  const admin = new AdminJS({})
+  // resto do código [...]
+}
+```
+
+> Lembre-se de alterar trecho `<mongo db url>` para a url do seu banco de dados. Se você não tiver um MongoDB configurado, você pode criar um gratuitamente no [MongoDB Atlas](https://www.mongodb.com/cloud/atlas).
+
+## Criando o primeiro CRUD
+
+Agora que já temos o AdminJS configurado, vamos criar o primeiro CRUD. Para o tutorial vamos levar em consideração que estamos fazendo um backoffice para uma locadora de filmes. Para isso vamos criar um arquivo `movie.entity.ts` com a seguinte estrutura:
+
+```typescript
+export interface Actor {
+  name: string;
+  surname: string;
+}
+
+export interface Movie {
+  title: string;
+  synopsis: string;
+  date: Date;
+  price: number;
+  categories: string[];
+  actors: Actor[];
+}
+```
+
+> Observe que adicionei vários tipos diferentes de dados para mostrar como o AdminJS trata cada um deles.
+
+Além da _interface_ também vamos criar o schema do Mongoose, onde vamos mapear todas as propriedades do nosso modelo para o banco de dados. Para isso vamos criar o arquivo `movie.schema.ts` com o seguinte código:
+
+```typescript
+import { Schema, model } from "mongoose";
+import { Actor, Movie } from "./movie.entity.js";
+
+export const ActorSchema = new Schema<Actor>({
+  name: { type: String, required: true },
+  surname: { type: String, required: true },
+})
+
+export const MovieSchema = new Schema<Movie>(
+  {
+    title: { type: String, required: true },
+    synopsis: { type: String, required: true },
+    date: { type: Date, required: true },
+    price: { type: Number, required: true },
+    categories: { type: [String], required: true },
+    actors: { type: [ActorSchema], required: true },
+  },
+  { timestamps: true },
+)
+
+export const MovieModel = model<Movie>('Movie', MovieSchema);
+```
+
+Por fim, precisamos registrar o nosso modelo no AdminJS, que fornece a _interface_ `ResourceWithOptions`, que tem as opções que podemos passar para cada _resource_. Então vamos criar o arquivo `movie.resource.ts` com o seguinte código:
+
+```typescript
+import { ResourceWithOptions } from "adminjs";
+import { MovieModel } from "./movie.schema.js";
+
+export const MovieResource: ResourceWithOptions = {
+  resource: MovieModel,
+  options: {
+    navigation: {
+      icon: "Film",
+    },
+    properties: {
+      synopsis: { type: "richtext" },
+    },
+  },
+};
+```
+
+Para deixar o formulário mais adequado, configurei um ícone para o menu de navegação e o tipo do campo `synopsis` para `richtext`. Você pode [ver mais sobre customização de propriedades](https://docs.adminjs.co/basics/property) ou [acessar a lista de ícones FatherIcons](https://feathericons.com/).
+
+Agora só precisamos de passar nosso recurso na opções do AdminJS, então vamos adicionar o seguinte código no o arquivo `app.ts`:
+
+```typescript
+// outros imports [...]
+import AdminJS, { AdminJSOptions } from "adminjs";
+import { MovieResource } from "./movie.resource.js";
+
+//[...]
+const start = async () => {
+  //[...]  
+  const adminOptions: AdminJSOptions = {
+    resources: [MovieResource],
+  }
+  const admin = new AdminJS(adminOptions);
+  //[...]
+};
+```
+
+Agora podemos acessar `http://localhost:3000/admin/resources/Movie/actions/new` e ver o formulário do CRUD de filmes:
+
+![Imagem mostrando o CRUD de filmes](/uploads/adminjs-example-form.png)
+
+## Dashboard
+
+O AdminJS vem com um dashboard padrão que é bem voltado para o desenvolvedor. Mas como tudo no AdminJS, ele também pode ser customizado. Então vamos criar um dash bem simples mostrando a quantidade de livros cadastrados. O AdminJS utiliza o [styled-components](https://styled-components.com/) e a lib já vem instalada com o pacote `@adminjs/design-system`. Então vamos instalar o pacote de tipagem do styled-components:
+
+```bash
+yarn add -D @types/styled-components
+```
+
+Agora vamos criar o arquivo `dashboard.component.tsx` que será o componente React do dashboard, com o seguinte código:
+
+```typescript
+import { ApiClient } from "adminjs";
+import React, { useEffect, useState } from "react";
+import styled from "styled-components";
+
+type DashboardResponse = {
+  moviesCount: number;
+}
+
+export const Dashboard = () => {
+  const [data, setData] = useState<DashboardResponse>({ moviesCount: 0 });
+  const api = new ApiClient();
+
+  useEffect(() => {
+    getData();
+  }, []);
+
+  const getData = async () => {
+    const response = await api.getDashboard<DashboardResponse>();
+    setData(response.data);
+  };
+
+  const Box = styled.div`
+    background-color: #fff;
+    border-radius: 4px;
+    padding: 20px;
+    margin: 20px;
+    box-shadow: 0 0 4px rgba(0, 0, 0, 0.1);
+    border-color: #ddd;
+    max-width: 200px;
+  `
+
+  return (
+    <div>
+      <h1>Dashboard</h1>
+      <Box>
+        <h2>Filmes</h2>
+        <span>{data.moviesCount}</span>
+      </Box>
+    </div>
+  );
+};
+
+export default Dashboard;
+```
+
+> O [ApiClient](https://github.com/SoftwareBrothers/adminjs/blob/master/src/frontend/utils/api-client.ts) é uma classe utilitária do AdminJS que facilita a comunicação com o backend.
+
+Para o AdminJS reconhecer o componente, precisamos carregar ele utilizando o `ComponentLoader`, onde vamos poder centralizar os nossos componentes customizados. Crie o arquivo `components.ts` com o seguinte código: 
+
+```typescript
+import { ComponentLoader } from "adminjs";
+
+export const componentLoader = new ComponentLoader();
+
+export const Components = {
+  Dashboard: componentLoader.add("Dashboard", "./Dashboard.component"),
+};
+```
+
+Hora de trabalhar na função que vai trazer os dados para o frontend do Dashboard, então crie um arquivo chamado `dashboard.config.ts` com o seguinte código:
+
+```typescript
+import { AdminJSOptions } from "adminjs";
+import { Components } from "./components.js";
+import { MovieModel } from "./movie.schema.js";
+
+const dashboardHandler = async () => {
+  const moviesCount = await MovieModel.countDocuments();
+  return { moviesCount };
+};
+
+export const DashboardOptions: AdminJSOptions["dashboard"] = {
+  component: Components.Dashboard,
+  handler: dashboardHandler,
+};
+```
+
+> A função `dashboardHandler` é responsável por trazer os dados que serão utilizados no frontend do Dashboard.
+
+Agora só precisamos adicionar o `DashboardOptions` e o `componentLoader` nas opções do AdminJS, então vamos adicionar o seguinte código no arquivo `app.ts`:
+
+```typescript
+import { componentLoader } from "./components.js";
+import { DashboardOptions } from "./dashboard.config.js";
+
+const adminOptions: AdminJSOptions = {
+  resources: [MovieResource],
+  dashboard: DashboardOptions, // adicione essa configuração
+  componentLoader, // adicione essa configuração
+};
+```
+
+Agora podemos acessar `http://localhost:3000/admin` e ver o nosso dashboard:
+
+![Imagem mostrando o dashboard](/uploads/adminjs-custom-dashboard.png)
+
+Aqui tivemos uma pequena amostra do que podemos fazer com customização de componentes no AdminJS. Você pode [ver mais sobre esse assunto na documentação do AdminJS](https://docs.adminjs.co/ui-customization/writing-your-own-components).
+
+## Autenticação
+
+Como todo backoffice que se prese, precisamos de autenticar os usuários que acessam o sistema. Então agora vamos configurar a autenticação no AdminJS. Vamos precisar adicionar as libs para gerenciar sessão e criptografar as senhas:
+
+```bash
+  yarn add @adminjs/passwords bcrypt connect-mongo express-session  && yarn add -D @types/express-session @types/express
+```
+
+Agora vamos criar os arquivos _entity_, _schema_ e _resource_ para o Administrador. Crie o arquivo `admin.entity.ts` com o seguinte código:
+
+```typescript
+export interface Admin {
+  name: string;
+  email: string;
+  hashedPassword: string;
+}
+```
+
+Vamos utilizar o _hashedPassword_ para armazenar a senha criptografada do usuário. Agora vamos criar o arquivo `admin.schema.ts` com o seguinte código:
+
+```typescript
+import { model, Schema } from "mongoose";
+import { Admin } from "./admin.entity.js";
+
+export const AdminSchema = new Schema<Admin>(
+  {
+    name: { type: String, required: true },
+    email: { type: String, required: true, unique: true },
+    hashedPassword: { type: String, required: true },
+  },
+  { timestamps: true }
+);
+
+export const AdminModel = model<Admin>("Admin", AdminSchema);
+```
+
+Por fim, vamos criar o arquivo `admin.resource.ts` com o seguinte código:
+
+```typescript
+import passwordsFeature from "@adminjs/passwords";
+import bcrypt from 'bcrypt';
+import { AdminModel } from "./admin.schema.js";
+import { componentLoader } from "./components.js";
+
+const encryptPassword = async (password: string) => {
+  const passwordHashed = await bcrypt.hash(password, 10);
+  return passwordHashed;
+};
+
+export const AdminResource = {
+  resource: AdminModel,
+  options: {
+    navigation: {
+      icon: "User",
+    },
+    properties: { hashedPassword: { isVisible: false } },
+  },
+  features: [
+    passwordsFeature({
+      properties: {
+        encryptedPassword: "hashedPassword",
+        password: "password",
+      },
+      hash: encryptPassword,
+      componentLoader: componentLoader,
+    }),
+  ],
+};
+```
+
+> Observe que estamos utilizando o `bcrypt` para criptografar a senha do usuário. Além disso estamos utilizando a funcionalidade de senha do AdminJS, disponibilizada no pacote `@adminjs/passwords`, que faz as trativas de exibição do campo senha e faz a criptografia da senha antes de salvar no banco de dados.
+
+Agora vamos precisar acessar o CRUD de Admin para cadastrar o primeiro usuário antes de finalizar a configuração de autenticação. Então acesse `http://localhost:3000/admin/resources/Admin/actions/new` e crie o primeiro usuário.
+
+![Imagem mostrando o formulário de cadastro de usuário](/uploads/adminjs-create-admin.png)
+
+Agora vamos configurar a autenticação no AdminJS. Para isso vamos criar o arquivo `auth.config.ts` com o seguinte código:
+
+```typescript
+import MongoStore from "connect-mongo";
+import { AdminModel } from "./admin.schema.js";
+import bcrypt from "bcrypt";
+
+const authenticate = async (email: string, password: string) => {
+  const admin = await AdminModel.findOne({ email });
+  if (!admin) return null;
+  const isValidPassword = await bcrypt.compare(password, admin.hashedPassword);
+  if (!isValidPassword) return null;
+  return admin;
+};
+
+export const AuthOptions = {
+  auth: {
+    authenticate: authenticate,
+    cookieName: "adminjs",
+    cookiePassword: "sessionsecret",
+  },
+  session: (sessionStore: MongoStore) => ({
+    store: sessionStore,
+    resave: true,
+    saveUninitialized: true,
+    secret: "sessionsecret",
+    cookie: {
+      httpOnly: process.env.NODE_ENV === "production",
+      secure: process.env.NODE_ENV === "production",
+    },
+    name: "adminjs",
+  }),
+};
+```
+
+> A função `authenticate` é responsável por validar o usuário e senha informados na tela de login e retornar um usuário válido em caso de sucesso. Se você precisar fazer uma lógica diferenciada de autenticação, utilizando um provedor externo da empresa por exemplo, é aqui que você deve alterar.
+
+Agora vamos adicionar o `AuthOptions` nas opções do AdminJS, então vamos adicionar o seguinte código no arquivo `app.ts`:
+
+```typescript
+import MongoStore from "connect-mongo";
+
+// [...]
+
+const start = async () => {
+  await mongoose.connect(process.env.MONGO_DB_URL || "");
+  // as alterações começam aqui
+  const sessionStore = MongoStore.create({
+    client: mongoose.connection.getClient(),
+    collectionName: "sessions",
+    stringify: false,
+    autoRemove: "interval",
+    autoRemoveInterval: 1,
+  });
+  const adminOptions: AdminJSOptions = {
+    resources: [MovieResource, AdminResource],
+    dashboard: DashboardOptions,
+    componentLoader,
+  };
+  const admin = new AdminJS(adminOptions);
+  const adminRouter = AdminJSExpress.buildAuthenticatedRouter(
+    admin,
+    AuthOptions.auth,
+    null,
+    AuthOptions.session(sessionStore)
+  );
+  // e finalizam aqui 
+  // [...]
+};
+```
+
+Agora podemos acessar `http://localhost:3000/admin` e você será redirecionado para a tela de login do AdminJS:
+
+![Imagem mostrando a tela de login do AdminJS](/uploads/adminjs-login.png)
+
+## Conclusão
+
+Vimos como configurar o AdminJS, criar um CRUD, customizar o dashboard e configurar a autenticação. O AdminJS é uma ferramenta muito poderosa e que pode ser utilizada para criar backoffices rapidamente e se você tiver interesse em aprender mais sobre a ferramenta você pode ler o artigo [AdminJS: diga adeus a templates de backoffice](/post/adminjs-diga-adeus-aos-templates-de-backoffice/).
