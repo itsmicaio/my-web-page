@@ -1,0 +1,108 @@
+---
+layout: article
+title: "Entendendo o EcmaScript Modules"
+date: 2023-11-05
+tags:
+  - nodejs
+  - frontend
+  - backend
+---
+
+Fala galera, na paz de jah? Tenho visto um movimento crescente de bibliotecas e frameworks que estão adotando o EcmaScript Modules (ESM) como padrão de módulos. Então resolvi estudar a fundo o que essa mudança significa e como ela afeta o desenvolvimento de aplicações Node.js, e claro, trouxe aqui pra vocês :D
+
+## O que é o EcmaScript Modules?
+
+O ESM é uma especificação de módulos para o JavaScript que foi padronizado na versão 6 do ECMAScript (ES6). A partir dai, deve ser implementado por todos os runtimes de Javascript. 
+
+O [CommonJS](https://nodejs.org/docs/latest/api/modules.html#modules-commonjs-modules) (padrão de módulos utilizado pelo Node.js) e outros padrões como AMD e o UMD, foram criados antes do ESM, e foram feitos pela "comunidade". O ESM chega para padronizar e ser o padrão oficial de módulos do JavaScript.
+
+Apesar de ter surgido em 2015, o padrão só foi implementado nos navegadores em 2018 e só saiu do modo experimental no NodeJS em 2020.
+
+## Principais diferenças
+
+Existem algumas diferenças entre o ESM e o CommonJS, mas as principais são:
+
+### Sintaxe
+
+A sintaxe do ESM é bem diferente do CommonJS. Enquanto o CommonJS utiliza a função `require` para importar módulos e o `module.exports` para exportar módulos, o ESM utiliza o `import` e o `export`.
+
+```js
+// CommonJS
+const express = require('express');
+
+module.exports = express;
+
+// ESM
+import express from 'express';
+
+export default express;
+```
+
+A grande diferença dessa mudança é que o `import` e o `export` são instruções, enquanto o `require` e o `module.exports` são funções. Isso significa que erros de importação serão avisados em tempo de compilação, minimizando a chance de erros em produção.
+
+### Modo estrito implícito
+
+Antigamente era necessário utilizar a instrução `"use strict"` para habilitar o modo estrito do JavaScript. O modo estrito é uma forma de executar o JavaScript de forma mais segura, evitando erros comuns e tornando o código mais legível. Com o ESM, o modo estrito é habilitado por padrão, não sendo mais necessário utilizar a instrução `"use strict"`.
+
+### Assíncrono por padrão
+
+O carregamento assíncrono permite que os módulos sejam carregados e executados de maneira não bloqueante, o que pode resultar em tempos de inicialização mais rápidos, especialmente em bases de código grandes. 
+
+Isso é benéfico em ambientes de navegador, onde o carregamento síncrono pode bloquear a thread principal e afetar a resposta da interface do usuário.
+
+### Compatibilidade com browsers
+
+Um ponto muito forte dos módulos ESM é que eles são compatíveis com os navegadores. Isso significa que podemos utilizar os mesmos módulos no Node.js e no navegador, sem precisar de ferramentas como o Webpack ou o Babel. Veja abaixo a [lista de navegadores que suportam o ES6](https://compat-table.github.io/compat-table/es6/):
+
+![Lista de navegadores que suportam o ESM](/uploads/es6-browsers-support-list.png)
+
+## Ta, import/export eu já conheço. O que tem de novo nisso?
+
+Bom, como falei acima, essa é uma resolução bem antiga, surgindo em 2015. Porém, na maioria dos casos estamos utilizando o *EcmaScript transpilado*, que é feito por várias ferramentas como Babel, Webpack e até mesmo o Typescript. 
+
+Quando utilizamos essa abordagem, o código é compilado para CommonJS no Node e será compilado no navegador usando um carregador síncrono embutido, perdendo todas as vantagens do ESM.
+
+Além disso, ao utilizar o ESM nativo passa a ser necessário especificar a extensão dos arquivos na hora do import, o que não é necessário quando utilizamos o ESM transpilado. Por exemplo, ao importar um arquivo `utils.js`:
+
+```js
+// ESM transpilado
+import utils from './utils';
+
+// ESM nativo
+import utils from './utils.js';
+```
+
+> Isso acontece pois no ESM nativo a resolução de módulos é mais estrita e adere mais de perto à forma como os sistemas de arquivos e os servidores web funcionam.
+
+## Como funciona?
+
+Bora ver então como funciona o ESM? De forma bem resumida:
+
+### ESM no Node.js
+
+Você pode ativar o ESM no Node.js de duas formas:
+
+- Utilizando `"type": "module"` no package.json: dessa forma você habilita o ESM de forma padrão no projeto, ou seja, todos os arquivos `.js` serão interpretados como ESM. Porém, isso pode causar problemas de compatibilidade com bibliotecas que ainda não suportam o ESM. Nesse modo você pode utilizar a extensão `.cjs` para indicar que o arquivo é um módulo CommonJS.
+
+- Utilizando a extensão `.mjs` nos arquivos: dessa forma você habilita o ESM apenas nos arquivos que possuem a extensão `.mjs`. Isso é útil para projetos que ainda não suportam o ESM, pois você pode utilizar o CommonJS nos arquivos `.js` e o ESM nos arquivos `.mjs`.
+
+### Como utilizar o ESM no navegador?
+
+Para utilizar o ESM no navegador, basta utilizar a opção `type="module"` na tag script do seu HTML. Dessa forma, o navegador irá interpretar o arquivo como um módulo ESM.
+
+```html
+<script type="module" src="app.js">
+```
+
+### Quero aprender na prática
+
+Se você quer ver exemplos mais robustos de como utilizar o ESM nativo no NodeJS e no browser, com compatibilidade com o CommonJS, e usando Typescript dá uma olhada no post [EcmaScript Modules na prática](/post/ecmascript-modules-na-pratica/).
+
+## Conclusão
+
+O ESM é uma especificação de módulos para o JavaScript que foi padronizada na versão 6 do ECMAScript (ES6). E apesar de estarmos familiarizados com o `import` e o `export`, entendemos que na maioria dos projetos utilizam o *EcmaScript transpilado*, que é feito por várias ferramentas como Babel, Webpack e até mesmo o Typescript. Espero que tenham curtido esse aprendizado, até a próxima!
+
+
+
+
+

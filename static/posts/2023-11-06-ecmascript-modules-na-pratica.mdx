@@ -1,0 +1,229 @@
+---
+layout: tutorial
+title: "EcmaScript Modules na prática"
+date: 2023-11-06
+tags:
+  - nodejs
+---
+
+Fala turma, para reforçar os conhecimentos que tive estudando EcmaScript modules, resolvi fazer um pequeno monorepo para praticar. Vamos conseguir ver na prática como funciona o suporte do NodeJS e dos browsers para o ESM, incluindo utilizar o ESM com o CommonJS, e também como utilizar o ESM com o TypeScript.
+
+## Exemplo 1: "type": "module"
+
+Vamos começar com o exemplo mais utilizado. Eu criei uma pasta chamada `esm-node-type-module` para esse primeiro exemplo, dentro dela vamos criar um arquivo `package.json` com o seguinte conteúdo:
+
+```json
+{
+  "name": "esm-node-type-module",
+  "version": "1.0.0",
+  "description": "Exemplo de uso do ESM com o type module",
+  "main": "index.js",
+  "scripts": {
+    "start": "node index.js"
+  },
+  "author": "Caio Fuzatto",
+  "license": "MIT"
+}
+```
+
+Depois vamos criar os arquivos `index.js` e `module1.js` com o seguinte conteúdo:
+
+```js
+// index.js
+import { test1 } from './module1.js';
+
+test1();
+```
+
+> Uma das primeiras coisas que vamos notar é a extensão do arquivo deve ser especificada no import, diferente do "ESM transpilado" que conseguia inferir a extensão do arquivo. Expliquei tudo sobre isso no post [Entendendo EcmaScript Modules](/post/entendendo-ecmascript-modules/).
+
+```js
+// module1.js
+export const test1 = () => {
+  console.log('Estamos dentro de um módulo ESM');
+}
+```
+
+Agora vamos rodar o comando `yarn start` e ver o resultado:
+
+![Erro ao tentar carregar um ESM com o NodeJS](/uploads/esm-error-load-es-module.png)
+
+Opa, erro ao carregar o módulo. Mas felizmente o NodeJS nos dá duas dicas do que fazer, nesse primeiro exemplo vamos utilizar a primeira dica e adicionar `"type": "module"` no nosso `package.json`. Agora é só rodar novamente e ver o resultado:
+
+```bash
+$ node index.js
+Estamos dentro de um módulo ESM
+```
+
+### Compatibilidade com o CommonJS
+
+O NodeJS também trouxe um suporte aos módulos ESM com o CommonJS, ou seja, podemos utilizar o ESM com o CommonJS. Para isso vamos criar um arquivo `module2.cjs` com o seguinte conteúdo:
+
+```js
+const test2 = async () => {
+  await new Promise((resolve) => setTimeout(resolve, 2000));
+  console.log("Estamos dentro de um módulo CommonJS");
+};
+
+module.exports = { test2 };
+```
+
+> Observe que a extensão do arquivo é `.cjs`, isso é necessário para o NodeJS entender que esse arquivo é um módulo CommonJS.
+
+E agora vamos importar esse módulo no nosso `index.js`:
+
+```js
+import { test1 } from './module1.js';
+import { test2 } from './module2.cjs';
+
+test1();
+await test2();
+```
+
+> Fiz uma função `async` para você ver que o ESM suporta o uso de await no top-level de módulos. Incrível né?
+
+Agora vamos rodar o comando `yarn start` e ver o resultado, que após 2 segundos será o seguinte:
+
+```bash
+$ node index.js
+Estamos dentro de um módulo ESM
+Estamos dentro de um módulo CommonJS
+```
+
+## Exemplo 2: Extensão .mjs
+
+Vamos agora para o segundo exemplo, que é o uso da extensão `.mjs`. Como já estamos familiarizados, vamos direto agora em? 
+
+Para isso vamos criar uma pasta chamada `esm-node-mjs` e dentro dela vamos criar um arquivo `package.json` com o seguinte conteúdo:
+
+```json
+{
+  "name": "esm-node-mjs",
+  "version": "1.0.0",
+  "description": "Exemplo de uso do ESM com a extensão .mjs",
+  "main": "index.mjs",
+  "scripts": {
+    "start": "node index.mjs"
+  },
+  "author": "Caio Fuzatto",
+  "license": "MIT"
+}
+```
+
+> Observe que nesse exemplo já estamos utilizando a extensão `.mjs` na propriedade `main` e no script `start`.
+
+Agora vamos copiar os arquivos `index.js` e `module1.js` do exemplo anterior e renomear para `index.mjs` e `module1.mjs` respectivamente. Já o `module2.cjs` vamos renomear para `module2.js`. Além disso é importante ajustar os imports na index né? Confira como ficou:
+
+```js
+import { test1 } from './module1.mjs';
+import { test2 } from './module2.js';
+
+test1();
+await test2();
+```
+
+Percebeu que inverteu o jogo? Agora os módulos ESM precisam ter a extensão `.mjs` e os CommonJS utilizam a `.js`, enquanto no outro exemplo era o contrário. Agora vamos rodar o comando `yarn start` e temos o mesmo resultado:
+
+```bash
+$ node index.mjs
+Estamos dentro de um módulo ESM
+Estamos dentro de um módulo CommonJS
+```
+
+## Exemplo 3: ESM no frontend
+
+Vamos agora para o terceiro exemplo, que é o uso do ESM no frontend. Para isso vamos criar uma pasta chamada `esm-frontend` e dentro dela vamos criar um arquivo `app.js` com o seguinte conteúdo:
+
+```js
+import { test1 } from './module1.js';
+
+document.getElementById('content').textContent = await test1();
+```
+
+> Bem semelhante aos exemplos de NodeJS, a diferença aqui é que estamos utilizando o `document` para alterar o conteúdo de um elemento HTML.
+
+Agora vamos criar nosso módulo, para isso vamos criar um arquivo `module1.js` com o seguinte conteúdo:
+
+```js
+export const test1 = async () => {
+  console.log("Estamos dentro de um módulo ESM | ", new Date().toISOString());
+  await new Promise((resolve) => setTimeout(resolve, 2000));
+  console.log("Conteúdo carregou | ", new Date().toISOString());
+  return "Fui gerado por um módulo ESM";
+};
+```
+
+E por fim, a página HTML que vai carregar o nosso módulo. Para isso vamos criar um arquivo `index.html` com o seguinte conteúdo:
+
+```html
+<!DOCTYPE html>
+<head>
+  <title>ESM no Frontend</title>
+</head>
+<body>
+  <div id="content">Carregando...</div>
+  <script type="module" src="app.js"></script>
+</body>
+```
+
+> Observe que estamos utilizando o atributo `type="module"` para indicar que o arquivo `app.js` é um módulo ESM.
+
+Para testar (e não tomar erro de CORS) vou utilizar a lib HTTP-SERVE. Você pode rodar `npx http-serve` dentro da pasta `esm-frontend` e acessar a URL `http://localhost:8080` para ver o resultado:
+
+![ESM no Frontend](/uploads/esm-frontend.png)
+
+# Exemplo 4: ESM nativo e Typescript
+
+Vamos agora para o quarto exemplo, que é o uso do ESM nativo com o TypeScript. Para isso vamos criar uma pasta chamada `esm-typescript` e dentro dela vamos criar um arquivo `package.json` com o seguinte conteúdo:
+
+```json
+{
+  "name": "esm-node-type-module",
+  "version": "1.0.0",
+  "description": "Exemplo de uso do ESM com o type module",
+  "main": "index.js",
+  "license": "MIT",
+  "author": "Caio Fuzatto",
+  "scripts": {
+    "start": "ts-node-esm index.ts"
+  },
+  "type": "module",
+  "devDependencies": {
+    "ts-node": "^10.9.1",
+    "typescript": "^5.2.2"
+  }
+}
+```
+
+> Observe que estamos utilizando o `ts-node-esm` para rodar o TypeScript com o ESM nativo. Você pode [ver mais sobre no Github do ts-node](https://github.com/TypeStrong/ts-node#esm)
+
+Agora vamos criar nosso arquivo `module1.ts` com o seguinte conteúdo:
+
+```ts
+export const test1 = async () => {
+  await new Promise((resolve) => setTimeout(resolve, 2000));
+  console.log("Estamos dentro de um módulo ESM nativo no Typescript");
+};
+```
+
+Até aqui tudo ok né? Agora vamos criar o `index.ts` com o seguinte conteúdo:
+
+```ts
+import { test1 } from './module1.js';
+
+await test1();
+```
+
+> Observe que estamos importando o módulo `module1.js` e não `module1.ts`. Isto é porque o TypeScript é transpilado para JavaScript, e o Node.js vai executar o código JavaScript transpilado, não o código TypeScript original.
+
+Agora vamos rodar o comando `yarn start` e ver o resultado:
+
+```bash
+$ ts-node-esm index.ts
+Estamos dentro de um módulo ESM nativo no Typescript
+```
+
+## Conclusão
+
+Bom pessoal, espero que tenham gostado do conteúdo. Conseguimos ver várias formas de utilizar o ESM nativo do NodeJS e dos browsers, e também como utilizar o ESM com o CommonJS. Vale sempre a pena avaliar a situação do projeto para escolher qual desses caminhos seguir. Você pode [ver o código completo no Github](https://github.com/itsmicaio/ecmascript-modules). Até a próxima!
+
