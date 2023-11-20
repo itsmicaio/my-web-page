@@ -1,0 +1,95 @@
+---
+layout: article
+title: "Filas e Eventos: A engrenagem dos sistemas"
+date: 2023-11-19
+tags:
+  - backend
+---
+
+Fala galera, novamente vai rolar o meetup [js-vix](https://www.instagram.com/js.vix) e dessa vez decidi falar sobre Filas e eventos. Como sempre, vou criar um artigo do assunto para conseguir montar o conteúdo e também para que vocês possam consultar depois.
+
+## Comunicação entre sistemas: sync e async
+
+A comunicação síncrona ocorre quando um processo emite uma solicitação e fica em estado de espera até receber uma resposta, por exemplo quando a gente faz um HTTP request para um endpoint e fica aguardando o retorno para completar algum processo. Este modelo, embora simples e direto, pode levar a ineficiências significativas, especialmente em sistemas com altas demandas de processamento ou latência de rede. Imagina você ter que ficar numa tela de checkout aguardando o processamento da compra por inteiro? 
+
+Ai que entra a comunicação assíncrona, permitindo que um processo continue sua execução sem aguardar diretamente uma resposta. Este modelo é fundamental para melhorar a escalabilidade e a eficiência, permitindo que sistemas complexos operem de maneira mais fluida e resiliente. Voltando ao exemplo do checkout, toda compra que você faz fica em processamento, e aos poucos o pedido vai ficando pronto, o pagamento é processado, a nota fiscal é emitida, o pedido é enviado, etc.
+
+Então vamos nos aprofundar no entendimento de como esses conceitos sustentam a comunicação eficiente em sistemas, destacando sua aplicabilidade e importância na construção de soluções tecnológicas robustas e adaptáveis às necessidades contemporâneas da computação.
+
+## Filas
+
+A ideia de filas, inspirada na vida cotidiana, remonta às primeiras décadas da computação. Na sua essência, uma fila é uma estrutura de dados que organiza elementos em uma ordem específica, geralmente seguindo o princípio do "primeiro a entrar, primeiro a sair" (FIFO).
+
+### Fila de mensagens (messaging queue)
+
+As filas são uma abordagem chave na comunicação assíncrona, permitindo que mensagens (por exemplo um JSON contendo informações para o processamento da mensagem, como ID da operação) sejam  armazenadas e processadas posteriormente, seguindo uma ordem específica. Elas são indispensáveis em sistemas que necessitam gerenciar grandes volumes de solicitações ou distribuir carga de trabalho de maneira eficiente.
+
+![Fluxo mostrando serviços salvando mensagens](/uploads/messaging-queue-save-message.png)
+
+Servindo como uma fileira para as mensagens que um determinado serviço tem que processar, as filas tem a relação de n-para-um. Por exemplo, imagine que você tem vários sites de venda, e só um serviço que processa os pedidos. Então, cada site vai colocar uma mensagem na fila de pagamento, e o serviço de pagamento vai processar uma mensagem por vez.
+
+![Fluxo mostrando serviços processando mensagens](/uploads/messaging-queue-process-message.png)
+
+Após a mensagem ser enviada para fila ela fica disponível para ser consumida pelo serviço. É importante que apenas um serviço fique responsável por consumir as mensagens de uma fila, isso por que a mensagem deve ter o formato (contrato) que o consumidor espera, e tende a ser apagada após o processamento com sucesso. Então, não daria para um serviço de NF e de logística consumirem a mesma mensagem, pois cada um faz uma ação diferente, imagina um pedido com NF gerada mas sem logística, ou o contrário?
+
+Ainda assim, é possível que um serviço seja instanciado várias vezes, em caso de necessidade de escalar o processamento. Nesse caso, cada instância vai consumir uma mensagem diferente, e a ferramenta vai garantir que cada mensagem seja consumida apenas uma vez, utilizando a visibilidade da mensagem para fazer esse controle.
+
+> **Ferramentas e serviços**: AWS Simple Queue Service, RabbitMQ, ActiveMQ, Amazon MQ, IBM MQ, Azure Queue Storage
+
+### Conceitos de filas de mensagens
+
+É importante entender alguns conceitos que são comuns em filas de mensagens, pois eles podem ser utilizados para ajustar o processamento do serviço da melhor maneira.
+
+**Delayed Message**
+
+Em caso de necessidade de liberar a mensagem para ser processada após um período X, alguns serviços disponibilizam a configuração do delay. Por exemplo, se você quer que uma mensagem seja processada apenas após 1 hora, você pode configurar o delay para 1 hora, e a mensagem só vai ficar disponível para ser consumida após esse período.
+
+**Controle de visibilidade**
+
+Existe para a fila conseguir garantir que a mensagem não será entregue para mais de um consumidor. Por exemplo, se um serviço consumir uma mensagem e não conseguir processar, a mensagem vai permanece na fila (invisível), e após um tempo a mensagem fica disponível para ser consumida novamente.
+
+**ACK (acknowledgement) e NACK (negative acknowledgement)**
+
+Essas duas operações servem para informar se a mensagem foi processada com sucesso (ACK) ou não (NACK). Geralmente os serviços controlam o NACK utilizando o tempo de visibilidade, porém, é possível fazer isso manualmente utilizando o NACK.
+
+**Dead Letter Queue**
+
+É uma fila que recebe as mensagens que não foram processadas com sucesso após algumas tentativas (configurável). Por exemplo, se uma mensagem foi consumida 3 vezes e não foi processada, ela vai para a fila de dead letter, e você pode analisar o que aconteceu com ela.
+
+## Eventos
+
+Eventos são utilizados para sinalizar a ocorrência de ações específicas dentro de um sistema, permitindo que diferentes componentes reajam de maneira desacoplada e eficiente. Este conceito é especialmente relevante em arquiteturas orientadas a eventos, onde a reatividade e a capacidade de resposta rápida são primordiais.
+
+> **Observer Pattern**: é um padrão de projeto de software que define uma dependência um-para-muitos entre objetos de modo que quando um objeto muda o estado, todos os seus dependentes são notificados e atualizados automaticamente.
+
+### Publish-Subscribe
+
+O padrão Publish-Subscribe (ou Pub/Sub) é um dos modelos mais populares de comunicação assíncrona, permitindo que um serviço publique eventos e outros serviços se inscrevam para receber esses eventos. O Pub/Sub é um modelo de comunicação n-para-n, onde um serviço publica um evento e vários serviços podem receber esse evento.
+
+![Fluxo mostrando serviços publicando e recebendo eventos](/uploads/event-publish-subscribe.png)
+
+Tópicos ou canais podem ser entendido como grupos de eventos, permitindo que os serviços se inscrevam para receber eventos que cheguem a tópico.
+
+Um exemplo bem comum de utilização de eventos é o envio de notificações push. Onde uma mensagem é enviada e vários dispositivos recebem ela. Nesse caso é bem comum utilizar os tópicos para segmentar os usuários, por exemplo, um tópico para usuários que compraram um produto, outro para usuários que compraram outro produto, etc. Assim, sendo possível enviar campanhas especificas para cada tipo de usuário.
+
+> **Ferramentas e serviços**: AWS Simple Notification Service, Google Cloud Pub/Sub, Azure Service Bus, Apache Kafka e etc...
+
+### Event-Subscriber
+
+O Event-Subscriber é uma variação do padrão observer onde o serviço que publica o evento define quem vai receber. Diferente do Pub/Sub em que todos os subscriber se inscreve no tópico e esse processo é gerenciado pelo própria ferramenta, aqui o evento deve ser registrado com informações do serviço que vai receber o evento, como por exemplo método HTTP, url e etc.
+
+![Fluxo mostrando serviços publicando e recebendo eventos](/uploads/event-subscriber.png)
+
+O bacana desse modelo é a possibilidade de agendar tarefas para um momento futuro, por exemplo, você pode agendar o envio de um e-mail para daqui 1 hora, ou agendar o envio de uma mensagem para um serviço que vai processar ela daqui 1 hora, além de também poder configurar re-tentativas em caso de falha no processamento.
+
+> **Ferramentas e serviços**: AWS EventBridge, Google Cloud Tasks, Azure Event Grid, Apache Kafka e etc...
+
+### Webhooks
+
+Webhooks são uma forma de comunicação assíncrona que permite que um serviço envie uma requisição HTTP para outro serviço, geralmente para notificar sobre um evento. Por exemplo, quando você envia a requisição para um meio de pagamento, você pode configurar um webhook para receber uma notificação quando o pagamento for processado. Assim você não precisa ficar indo na API do meio de pagamento para verificar se o pagamento foi processado.
+
+É muito comum também que webhooks sejam salvos em filas e processados posteriormente, para evitar que a mensagem seja perdida em caso de falha no processamento.
+
+## Conclusão
+
+Vimos como é possível utilizar filas e eventos para melhorar a comunicação entre sistemas, e como isso pode ajudar a escalar o processamento de mensagens. Também vimos como é possível utilizar esses conceitos para melhorar a experiência do usuário, como por exemplo, enviar uma notificação push quando um pedido é enviado. Por hoje é isso, espero que tenham gostado, e até a próxima!
