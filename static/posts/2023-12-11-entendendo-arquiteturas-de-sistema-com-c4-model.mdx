@@ -1,0 +1,106 @@
+---
+layout: article
+title: "Entendendo arquiteturas de sistema com C4 model"
+date: 2023-12-11
+tags:
+  - backend
+---
+
+Fala galera, estou estudando bastante sobre arquitetura de software e uma coisa que me chamou bastante atenção foi o C4 model, que é uma forma de desenhar arquiteturas de software de forma simples e objetiva. Bora aprender?
+
+## Introdução
+
+Diagramar um sistema é uma das formas mais eficientes de comunicar o que você está construindo para outras pessoas, mas muitas vezes por falta de padronização, os diagramas acabam ficando confusos e difíceis de entender, foi ai que Simon Brown criou o [C4 model](https://c4model.com/), que é uma forma de desenhar arquiteturas de software de forma simples e objetiva.
+
+Depois do [manifesto ágil](https://agilemanifesto.org/), a documentação acabou ficando um pouco de lado e muitas empresas começaram a ter dificuldades para comunicar a arquitetura de seus sistemas, dessa forma o C4 model veio para trazer simplicidade e objetividade nesse processo.
+
+## O que é o C4 model?
+
+A ideia do C4 model é ser um modelo de documentação hierárquico, composto por 4 níveis de abstração, onde cada nível vai aumentando o detalhe do sistema, como se você estivesse dando um zoom em um mapa e conseguindo ver outras informações como ruas, casas, etc.
+
+## Os 4 níveis de diagramas
+
+**System Context Diagram:** O diagrama de contexto é o nível mais alto de abstração, onde mostra o sistema como um todo e como ele se relaciona com outros sistemas. Aqui a gente vai focar em atores (como clientes ou admins) e sistemas externos, dando um panorama geral de como o sistema se relaciona com o mundo externo.
+
+![System Context Diagram](https://static.structurizr.com/workspace/36141/diagrams/SystemContext.png)
+
+**Container Diagram:** O diagrama de contêiner é o nível de abstração que mostra os contêineres que compõem o sistema. Aqui é como se a gente desse um zoom e focado em contêineres do sistema, como uma API, uma função serverless, banco de dados, além de também trazer os atores e sistemas externos trazendo uma visão mais completa do funcionamento do sistema.
+
+![Container Diagram](https://static.structurizr.com/workspace/36141/diagrams/Containers.png)
+
+**Component Diagram:** O diagrama de componente é o nível de abstração que mostra os componentes que compõem os contêineres. Nesse nível a gente da um zoom mais centralizado no sistema e foca em componentes, como um controller, um service, libs que serão utilizadas, eliminando atores e focando apenas nas funcionalidades do sistema e como eles se comunicam entre si
+
+![Component Diagram](https://static.structurizr.com/workspace/36141/diagrams/Components.png)
+
+**Code Diagram:** O diagrama de código é o nível de abstração que mostra o código fonte dos componentes. Esse nível é um zoom profundo em como o sistema está estruturado hoje, focando em classes, interfaces, etc. Embora esse nível exista, ele geralmente não é utilizado pois o próprio código já serve de representação visual, além de existir formas mais eficientes de representar esse nível.
+
+![Code Diagram](https://c4model.com/img/class-diagram.png)
+
+Assim a gente cria uma hierarquia de diagramas, onde cada nível vai aumentando o detalhe do sistema:
+
+![Hierarquia de diagramas](https://c4model.com/img/c4-overview.png)
+
+## Modelos extras
+
+Além dos 4 níveis de diagramas e das 4 abstrações, o C4 model também possui alguns modelos extras que podem ser utilizados para representar informações adicionais, como:
+
+**Dynamic Diagram:** O C4 model não se propõe a representar os fluxos do sistema, mas se você precisar de representar a maneira que o software executa, você pode utilizar o diagrama dinâmico, que funciona como um [diagrama de sequência](https://www.ibm.com/docs/pt-br/rsm/7.5.0?topic=uml-sequence-diagrams).
+
+![Dynamic Diagram](https://static.structurizr.com/workspace/76748/diagrams/SignIn.png)
+
+**Deployment Diagram:** É um diagrama que mostra como os contêineres são implantados em na infraestrutura do sistema, como por exemplo, se o sistema está rodando em um cluster kubernetes, se está rodando em um servidor EC2 na AWS, utilizando Apache ou Nginx, e por ai vai...
+
+![Deployment Diagram](https://static.structurizr.com/workspace/76748/diagrams/LiveDeployment.png)
+![Deployment Diagram with AWS resources](https://static.structurizr.com/workspace/54915/diagrams/AmazonWebServicesDeployment.png)
+
+**Landscape Diagram:** Permite visualizar de forma mais ampla a estrutura de sistemas externos dentro da uma empresa, e a relação deles entre si. Ao exemplo podemos ter ERP (Enterprise Resource Planning), CRM (Customer Relationship Management), WMS (Warehouse Management System), e entender como eles se relacionam entre si.
+
+![Landscape Diagram](https://static.structurizr.com/workspace/28201/diagrams/SystemLandscape.png)
+
+## Abstrações
+
+Além dos 4 níveis de diagramas, o C4 model também possui 5 abstrações que são utilizadas para representar os elementos do sistema, são elas:
+
+**Person:** Representa um ator do sistema, algo que vai funcionar como um gatilho para o sistema, como usuários executando funções ou até mesmo outros sistemas que irão se comunicar com a sua API.
+
+**Software System:** Representa um sistema externo que se comunica com o sistema, como um sistema de pagamento ou um sistema de envio de e-mails.
+
+**Container:** É uma abstração de algo que executa código ou armazena dados, como uma API, uma função serverless, um banco de dados, uma cron job, um script, etc.
+
+**Component:** Agrupa funcionalidades do sistema, por exemplo se o projeto utiliza o padrão MVC, um controller seria um componente, um service seria outro componente, ou se o projeto utiliza o padrão de camadas, uma camada seria um componente.
+
+**Relationship**: Representa a comunicação entre os elementos do sistema, como um usuário que faz uma requisição para uma API, ou uma API que faz uma requisição para um sistema externo.
+
+## Notações
+
+O C4 se diz independente de notações, a ideia é focar nas abstrações e garantir que o time vai ter uma linguagem comum para descrever arquitetura de software. Então como ponto de partida, as pessoas (e o próprio [c4model.com](https://c4model.com/)) tem utilizado bastante o modelo abaixo:
+
+![Notações](/uploads/c4-model-notations.png)
+
+A ideia é entender que mais importante que notação é garantir que você está passando a mensagem corretamente e que o seu diagrama faça sentido e que seja auto-descritivo. Foque em títulos, legendas e descrições bem definidos, tome cuidado com abreviações pois podem causa confusão no seu público. 
+
+As relações entre os elementos devem ser representadas por setas, mas devem ter uma descrição para deixar claro o que está acontecendo, por exemplo, se um usuário está fazendo uma requisição para uma API, a seta deve ser descrita como "faz requisição para", além de também trazer o protocolo de comunicação como HTTP, gRPC, etc.
+
+![Diagramas alternativos](https://c4model.com/img/alternative-1.png)
+
+Você pode usar e abusar das cores nos seus diagramas (se isso estiver acordado entre seu time). Apesar dos tons de azul e cinza estarem presentes em boa parte das representações disponíveis na internet, o C4 não define cores, então você pode utilizar as cores que quiser desde que estejam bem descritas, como uma legenda de cores por exemplo.
+
+> Se ficar com dúvida se o seu diagram está bom, a site do C4 model disponibiliza um checklist para você validar o seu diagrama, você pode [acessar ele aqui](https://c4model.com/review/).
+
+## Como desenhar arquiteturas com C4 model?
+
+Para desenhar arquiteturas com C4 model, de forma bem rápida podemos utilizar o famoso [draw.io](https://app.diagrams.net/), que é gratuito e existe para todas plataformas, inclusive existe uma [extensão - extra oficial - para o VSCode](https://marketplace.visualstudio.com/items?itemName=hediet.vscode-drawio) que permite você diagrame no próprio editor de texto. 
+
+Para habilitar o C4 model no draw.io, basta ir em "More Shapes" e escolher C4 na lista que irá abir.
+
+![Habilitando C4 model no draw.io](/uploads/drawio-c4-shapes.png)
+
+### Diagrams as code
+
+Outra maneira de fazer diagramas C4 é utilizar ferramentas como o [Structurizr](https://structurizr.com/) ou o [PlantUML](https://plantuml.com/pt/) que permitem que você faça o diagrama utilizando código. 
+
+> Na próxima semana eu vou trazer um tutorial dos primeiros passos com C4 model com código. Fica ligado
+
+## Conclusão
+
+O C4 model é uma forma simples e objetiva de desenhar arquiteturas de software, ele não é uma ferramenta, mas sim um modelo de documentação que pode ser utilizado para representar arquiteturas de software de forma simples e objetiva. Várias das grandes corporações ja adotaram o C4 como modelo definitivo de arquitetura interna, então é um bom momento para você aprender e mandar bem nas entrevistas. Até a próxima :) 
