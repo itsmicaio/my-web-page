@@ -1,0 +1,347 @@
+---
+layout: article
+title: "Diagram as Code com C4 model e Structurizr"
+date: 2023-12-21
+tags:
+  - backend
+---
+
+Fala galera, hoje quero falar sobre C4 model novamente, mas dessa vez a ideia é CODAR o diagrama C4 model do zero, utilizando a ferramenta Structurizr. Bora lá?
+
+## O que é C4 model?
+
+O C4 model é uma abordagem para descrever arquiteturas de software em vários níveis de abstração, até o código. Ele é composto por 4 níveis: Software Context, Container, Component e Code.
+
+Eu falo mais sobre o C4 model no artigo [Visualizando arquiteturas de sistema com C4 model](/post/entendendo-arquiteturas-de-sistema-com-c4-model), da um confere lá!
+
+## Diagrams as Code
+
+Diagrams as Code ou DaC é uma abordagem para criar diagramas de arquitetura de software utilizando código, e não ferramentas gráficas como o Visio, Lucidchart e etc... Essa abordagem tem como objetivo facilitar a criação e manutenção dos diagramas, além de permitir que eles sejam versionados e integrados com o código do sistema.
+
+### Quais a vantagens de usar DaC?
+
+- **Facilidade de criação e manutenção**: Com o código é muito mais fácil criar e manter os diagramas, pois você pode utilizar ferramentas de IDE como autocomplete, refatoração e etc...
+- **Versionamento**: Escrevendo o diagrama como código possibilita que ele seja versionado, permitindo que você possa ver o histórico de alterações e até mesmo fazer um diff entre versões.
+- **Desenvolvimento mais simples**: Eu não sei vocês, mas eu sempre perco muito tempo escolhendo pra qual lado vou colocar um elemento e como as setas devem estar. Com o código você perde essa preocupação, e pode focar no que realmente importa, que é a arquitetura do sistema.
+
+## O que é Structurizr?
+
+[Structurizr](https://structurizr.com/) é uma ferramenta para criar diagramas de arquitetura de software baseados no C4 model, que foi desenvolvido pelo próprio criado do C4 o Simon Brown. 
+
+O Structurizr tem sua própria DSL para escrever os diagramas, e você pode renderizar os diagramas de várias ferramentas como a versão lite, on-premises ou cloud. Para nosso tutorial, vou utilizar o [Browser-based DSL editor](https://structurizr.com/dsl).
+
+> *DSL* ou *Domain Specific Language* é uma linguagem de programação ou especificação dedicada a um domínio de problema particular, representando conceitos específicos e ignorando conceitos desnecessários.
+
+![Print do editor de DSL do Structurizr](/uploads/structurizr-dsl-editor.png)
+
+Acima temos a interface web do editor de DSL do structurizr. Além do editor de texto e da visualização do diagrama, temos algumas ferramentas que achei interessante trazer aqui:
+
+1. **Renderizar**: Renderiza o diagrama com base no código escrito.
+2. **Alterar 'view'**: Altera entre as visualizações do diagrama, que são: System Context, Container e etc...
+3. **Exportar para PNG**: Permite gerar um arquivo PNG do seu diagrama, que pode ser usado em documentações.
+
+Além dessas, também é possível exportar e renderizar utilizando outras ferramentas como PlantUML, Mermaid e etc...
+
+## Caso de uso
+
+Para construir nosso diagrama, vamos usar como exemplo um sistema de carteira digital. A "wallet" é um sistema que permite aos usuários fazer pagamentos para lojas que implementam a API da loja e adicionar créditos através de cartão ou PIX. Bora ver como fica isso no diagrama CODADO?
+
+## Codando o diagrama
+
+Vamos ao que interessa, vamos codar o diagrama C4 model do nosso sistema de carteira digital para isso abra o [editor de DSL do Structurizr](https://structurizr.com/dsl), e vamos começar a codar.
+
+### Software Context
+
+Vou usar o primeiro nível para nós aprendermos um pouco da linguagem do Structurizr, e assim vamos construindo passo a passo o diagrama. Primeiro de tudo, vamos começar com o "core" do nosso sistema de exemplo, que é a carteira digital. Cole esse primeiro código de exemplo no seu editor e clique em renderizar:
+
+```dsl
+workspace {
+
+  model {
+    wallet = softwareSystem "Wallet Digital" "Permite aos usuários fazer pagamentos e adicionar créditos."
+  }
+
+  views {
+    systemContext wallet {
+      include *
+      autoLayout
+    }
+  }
+}
+```
+
+Você verá que o diagrama foi renderizado, e ele é bem simples, mas já temos o nosso primeiro diagrama C4 model. Vamos entender o que fizemos aqui:
+
+- `workspace` é o elemento raiz do nosso diagrama, ele é obrigatório e deve conter os elementos `model` e `views`.
+- `model` é onde definimos os elementos do nosso diagrama, nesse caso temos apenas um `softwareSystem` que é a nossa carteira digital, mas ja vamos adicionar mais.
+- `views` é onde definimos as visualizações do nosso diagrama, nesse caso temos apenas uma `systemContext` que é a visualização do diagrama de contexto do nosso sistema, e dentro dela temos o `include *` que indica que queremos incluir todos os elementos do nosso modelo, e o `autoLayout` que indica que queremos que o diagrama seja renderizado automaticamente.
+
+Agora vamos adicionar mais alguns elementos ao nosso diagrama, vamos adicionar o usuário e o sistema de pagamento, e também vamos adicionar algumas relações entre eles. Cole esse código no seu editor:
+
+```dsl
+workspace {
+
+  model {
+    user = person "Usuário" "Uma pessoa que utiliza a wallet digital para pagamentos."
+    store = person "Loja" "Estabelecimento que aceita pagamentos via API da wallet."
+    paymentService = softwareSystem "Serviço de Pagamento" "Serviço de pagamento externo como cartão de crédito ou PIX." "External Software System"
+    wallet = softwareSystem "Wallet Digital" "Permite aos usuários fazer pagamentos e adicionar créditos."
+    
+    user -> wallet "Usa"
+    store -> wallet "Integra com"
+    wallet -> paymentService "Interage com"
+  }
+
+  views {
+    systemContext wallet {
+      include *
+      autoLayout
+    }
+  }
+}
+```
+
+Agora temos um diagrama mais completo, com os elementos e relações entre eles. Vamos entender o que fizemos aqui:
+
+- Elemento `paymentService` é um elemento externo, por isso marcamos ele com a tag `External Software System`.
+- `->` é a sintaxe para representar uma relação entre dois elementos, ele é essencial para conseguirmos representar como os sistemas se comunicam e você deve descrever a relação, como por exemplo "Usa", "Integra com" e "Interage com".
+
+> Todos os elementos podem ser marcados com uma tag, que sempre é passada como último parâmetro da declaração do elemento. No exemplo `paymentService` veja como é a referencia desse elemento: `softwareSystem <name> [description] [tags]` de Você pode ver todos os elementos e relações disponíveis na [documentação](https://docs.structurizr.com/dsl/language).
+
+Bora ver como está ficando nosso diagrama? Clique em renderizar e você verá o diagrama a seguir:
+
+![Diagrama C4 model do sistema de carteira digital v1](/uploads/c4-structurizr-v1.png)
+
+Você deve estar se perguntando sobre a estilização dos elementos, e é isso que vamos fazer agora. Vamos adicionar alguns estilos para deixar nosso diagrama mais bonito. Cole esse código no seu editor:
+
+```dsl
+workspace {
+
+  model {
+    user = person "Usuário" "Uma pessoa que utiliza a wallet digital para pagamentos."
+    store = person "Loja" "Estabelecimento que aceita pagamentos via API da wallet."
+    paymentService = softwareSystem "Serviço de Pagamento" "Serviço de pagamento externo como cartão de crédito ou PIX." "External Software System"
+    wallet = softwareSystem "Wallet Digital" "Permite aos usuários fazer pagamentos e adicionar créditos."
+    
+    user -> wallet "Usa"
+    store -> wallet "Integra com"
+    wallet -> paymentService "Interage com"
+  }
+
+  views {
+    systemContext wallet {
+      include *
+      autoLayout
+    }
+    
+    styles {
+        element "Person" {
+            background #08427b
+            color #ffffff
+            fontSize 22
+            shape Person
+        }
+        element "Software System" {
+            background #1168bd
+            color #ffffff
+        }
+        element "External Software System" {
+            background #999999
+            color #ffffff
+        }
+    }
+  }
+}
+```
+
+Agora temos um diagrama mais estilizado, com cores e formas diferentes para cada elemento. Vamos entender o que fizemos aqui:
+
+- `styles` é onde definimos os estilos dos elementos do nosso diagrama, nesse caso temos 3 estilos, um para `Person`, um para `Software System` e um para `External Software System`, e dentro de cada estilo temos as propriedades que queremos estilizar, como por exemplo `background`, `color`, `fontSize` e `shape`. Você pode encontrar outras opções de estilização [nesse link da documentação](https://docs.structurizr.com/dsl/language#softwaresystem).
+
+> Aqui é importante entender que todos os elementos recebem uma tag correspondente ao seu tipo por padrão, por isso não é necessário definir a tag `Person` para o elemento `user`, pois ele já é do tipo `Person` por padrão.
+
+Bora ver como está ficando nosso diagrama? Clique em renderizar e você verá o diagrama a seguir:
+
+![Diagrama C4 model do sistema de carteira digital v2](/uploads/c4-structurizr-v2.png)
+
+Agora sim né? Nosso diagrama está ficando bonito! Agora bora para o próximo nível.
+
+### Container
+
+Agora vamos descer para o diagrama de container, para isso vamos abrir um bloco no nosso elemento Wallet e declarar os elementos internos dentro dele. Bora ver? Cola esse código no seu editor:
+
+```dsl
+workspace {
+
+  model {
+    user = person "Usuário" "Uma pessoa que utiliza a wallet digital para pagamentos."
+    store = person "Loja" "Estabelecimento que aceita pagamentos via API da wallet."
+    paymentService = softwareSystem "Serviço de Pagamento" "Serviço de pagamento externo como cartão de crédito ou PIX." "External Software System"
+    wallet = softwareSystem "Wallet Digital" "Permite aos usuários fazer pagamentos e adicionar créditos." {
+      mobileApp = container "Aplicativo Móvel/Website" "Interface para gerenciamento de conta e pagamentos." "Mobile App/Web" "Mobile App/Web"
+      api = container "API da Wallet" "Permite integração com lojas." "REST API"
+      backendService = container "Serviço de Backend" "Processa transações, gerencia contas." "Código-fonte"
+      database = container "Banco de Dados" "Armazena informações de usuário, transações, créditos." "SQL Database" "SQL Database"
+      apiPaymentService = container "API de pagamentos" "Permite a adição de crédito nas carteiras do sistema" "External Container"
+    }
+    
+    user -> wallet "Usa"
+    store -> wallet "Integra com"
+    wallet -> paymentService "Interage com"
+    user -> mobileApp "Usa"
+    store -> api "Usa"
+    mobileApp -> backendService "Envia requisições para" "HTTP"
+    api -> backendService "Envia requisições para" "HTTP"
+    backendService -> database "Lê/escreve" "ORM"
+    backendService -> apiPaymentService "Envia requisições para" "HTTP"
+  }
+
+  views {
+    systemContext wallet {
+      include *
+      autoLayout
+    }
+    container wallet {
+      include *
+      autoLayout
+    }
+
+    styles {
+        element "Person" {
+            background #08427b
+            color #ffffff
+            fontSize 22
+            shape Person
+        }
+        element "Software System" {
+            background #1168bd
+            color #ffffff
+        }
+        element "External Software System" {
+            background #999999
+            color #ffffff
+        }
+        element "Container" {
+            background #438dd5
+            color #ffffff
+        }
+        element "Mobile App/Web" {
+            shape MobileDeviceLandscape
+        }
+        element "SQL Database" {
+            shape Cylinder
+        }
+    }
+  }
+}
+```
+
+Além de adicionar os elementos internos ao container, também adicionamos as estilizações que ja vimos como funciona. Vamos entender o que mais fizemos aqui:
+
+- `container` é o elemento que representa um container, e ele deve ser declarado dentro de um elemento `softwareSystem`, depois disso também é necessário declarer ele dentro das 'views', para que o diagrama seja renderizado.
+- Além disso agora também adicionamos parâmetro protocolo na declaração das relações entre containers, que é o protocolo de comunicação entre eles, como por exemplo `HTTP` e `ORM`.
+
+Então bora renderizar e ver como ficou nosso diagrama de container:
+
+> Obs: lembre-se de alterar a view do editor para container.
+
+![Diagrama C4 model do sistema de carteira digital v3](/uploads/c4-structurizr-v3.png)
+
+### Component
+
+E para finalizar, de forma bem direta vamos ao nosso diagrama de componente. Agora que ja aprendemos os conceitos basicos, para o diagrama de componente basta a gente adicionar o bloco de componentes dentro do container (no caso o container `backendService`), e declarar os componentes dentro dele, depois é criar a view e adicionar a estilização. Bora ver? Cola esse código no seu editor:
+
+```dsl
+workspace {
+
+  model {
+    user = person "Usuário" "Uma pessoa que utiliza a wallet digital para pagamentos."
+    store = person "Loja" "Estabelecimento que aceita pagamentos via API da wallet."
+    paymentService = softwareSystem "Serviço de Pagamento" "Serviço de pagamento externo como cartão de crédito ou PIX." "External Software System"
+    wallet = softwareSystem "Wallet Digital" "Permite aos usuários fazer pagamentos e adicionar créditos." {
+      mobileApp = container "Aplicativo Móvel/Website" "Interface para gerenciamento de conta e pagamentos." "Mobile App/Web" "Mobile App/Web"
+      api = container "API da Wallet" "Permite integração com lojas." "REST API"
+      backendService = container "Serviço de Backend" "Processa transações, gerencia contas." "Código-fonte" {
+        authenticationComponent = component "Componente de Autenticação" "Gerencia login e segurança das contas." "Spring Security"
+        transactionManagementComponent = component "Componente de Gerenciamento de Transações" "Processa pagamentos e adição de créditos." "Java"
+        paymentIntegrationComponent = component "Componente de Integração com Serviços de Pagamento" "Comunica com serviços de pagamento." "REST Client"
+        storeApiComponent = component "Componente de API para Lojas" "API para lojas realizarem transações." "REST API"
+      }
+      database = container "Banco de Dados" "Armazena informações de usuário, transações, créditos." "SQL Database" "SQL Database"
+      apiPaymentService = container "API de pagamentos" "Permite a adição de crédito nas carteiras do sistema" "External Container"
+    }
+    
+    user -> wallet "Usa"
+    store -> wallet "Integra com"
+    wallet -> paymentService "Interage com"
+    user -> mobileApp "Usa"
+    store -> api "Usa"
+    mobileApp -> backendService "Envia requisições para" "HTTP"
+    api -> backendService "Envia requisições para" "HTTP"
+    backendService -> database "Lê/escreve" "ORM"
+    backendService -> apiPaymentService "Envia requisições para" "HTTP"
+    mobileApp -> authenticationComponent "Autentica através de"
+    transactionManagementComponent -> database "Registra transações em"
+    paymentIntegrationComponent -> paymentService "Integra com"
+    api -> storeApiComponent "Encaminha requisições para"
+  }
+
+  views {
+    systemContext wallet {
+      include *
+      autoLayout
+    }
+    container wallet {
+      include *
+      autoLayout
+    }
+    component backendService {
+      include *
+      autoLayout
+    }
+    
+    styles {
+        element "Person" {
+            background #08427b
+            color #ffffff
+            fontSize 22
+            shape Person
+        }
+        element "Software System" {
+            background #1168bd
+            color #ffffff
+        }
+        element "External Software System" {
+            background #999999
+            color #ffffff
+        }
+        
+        element "Container" {
+            background #438dd5
+            color #ffffff
+        }
+        element "Mobile App/Web" {
+            shape MobileDeviceLandscape
+        }
+        
+        element "SQL Database" {
+            shape Cylinder
+        }
+        element "Component" {
+            background #85bbf0
+            color #000000
+        }
+    }
+  }
+}
+```
+
+Agora é só renderizar e ver como ficou nosso diagrama de componente:
+
+> Obs: lembre-se de alterar a view do editor para component.
+
+![Diagrama C4 model do sistema de carteira digital v4](/uploads/c4-structurizr-v4.png)
+
+## Conclusão
+
+E é isso galera, espero que tenham gostado do artigo e que tenham aprendido um pouco mais sobre o C4 model e o Structurizr. Espero que ajude vocês a visualizar melhor as arquiteturas de software de vocês. Até a próxima!
