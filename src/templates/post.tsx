@@ -1,5 +1,5 @@
 import * as React from "react";
-import { graphql } from "gatsby";
+import { Script, graphql } from "gatsby";
 import { Post } from "../entities/Post";
 import ListTags from "../components/list-tags";
 import { MDXProvider } from "@mdx-js/react";
@@ -35,6 +35,15 @@ const PostTemplate: React.FC<IProps> = ({ data, children }) => {
           </div>
         </div>
       </article>
+      <Script
+        src="https://utteranc.es/client.js"
+        //@ts-ignore
+        repo="itsmicaio/my-web-page"
+        issue-term="pathname"
+        label="Comments"
+        theme="github-light"
+        crossorigin="anonymous"
+      ></Script>
     </div>
   );
 };
