@@ -1,4 +1,3 @@
-import React from "react";
 import { Node } from "gatsby";
 
 export default function(node: Node) {
