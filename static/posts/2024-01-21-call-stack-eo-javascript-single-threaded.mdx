@@ -1,0 +1,133 @@
+---
+layout: article
+title: "Call Stack e o JavaScript single-threaded"
+date: 2024-01-21
+tags:
+  - javascript
+  - web
+  - nodejs
+---
+
+Esse é o primeiro artigo de uma série que eu pretendo entender e explicar como o JavaScript e o NodeJS funcionam por debaixo dos panos. E a primeira coisa que precisamos colocar na cabeça é: O JavaScript é single-threaded!
+
+## Mas e as funções assíncronas?
+
+A resposta para essa pergunta não está exatamente no JavaScript e sim no ambiente em que ele está sendo executado. No caso temos os browsers e o NodeJS que implementam o mecanismo chamado de Event Loop, que é o responsável por fazer com que o JavaScript seja capaz de executar funções assíncronas.
+
+E o event loop será o assunto do próximo artigo, mas antes disso precisamos entender o que é o Call Stack!
+
+## Call Stack ilustrada
+
+Um conceito fundamental para entender o porque do JavaScript ser single-threaded é a Call Stack, que nada mais é do que a pilha de execuções do JavaScript. Toda função executa é empilhada na Call Stack que executa uma por vez, de forma síncrona. Vamos ver o trecho de código abaixo:
+
+```js
+function segunda() {
+  console.log('olá');
+  return 'tchau';
+}
+
+function primeira() {
+  const retorno = segunda();
+  console.log(retorno);
+}
+
+primeira();
+```
+
+O código é simplão mas é bem prático pra mostrar como a Call Stack vai se comportar para executar todas essas funções, vamos analisar na imagem abaixo:
+
+![Call Stack empilhando as funções](/uploads/call-stack-illustrated-1.png)
+
+Nessa primeira sequencia conseguimos ver claramente todas as funções sendo empilhadas uma por uma até chegar na última dessa sequencia, que é o `console.log('olá');`. A partir dai a Call Stack começa a desempilhar as funções, executando uma por vez como a gente pode ver na imagem abaixo:
+
+![Call Stack desempilhando](/uploads/call-stack-illustrated-2.png)
+
+Viu como um por um as funções vão sendo executadas e saindo da stack? A função `segunda()` foi executada por completo e então o restante da função `primeira()` - o `console.log('tchau')` - pode ser executado. Na imagem não mostra mas o próximo passo ali seria desempilhar a função `primeira()` e então a Call Stack estaria vazia novamente.
+
+## A Call Stack nos leva ao caminho do erro
+
+Um dos únicos momentos que a gente pode visualizar - ou ler - a Call Stack durante o desenvolvimento é quando ocorre um erro. Vamos alterar um pouco no nosso código la de cima para introduzir um erro intensional:
+
+```js
+function segunda() {
+  throw new Error('deu ruim');
+  return 'tchau';
+}
+
+function primeira() {
+  const retorno = segunda();
+  console.log(retorno);
+}
+
+primeira();
+```
+
+Agora a gente pode rodar o código - no DevTools ou no console do NodeJS - e ver o que acontece:
+
+![Call Stack com erro](/uploads/call-stack-when-code-throw.png)
+
+## E qual o tamanho da Call Stack?
+
+Talvez você ja tenha se deparado com um erro parecido com esse `RangeError: Maximum call stack size exceeded`. Já passou? Não? Bom, se você nunca viu isso experimente rodar esse código no seu console:
+
+```js
+function recursiva() {
+  recursiva();
+}
+
+recursiva();
+```
+
+É tiro e queda! Como temos uma função recursiva (uma função que se auto invoca) e infinita (pois não temos uma condição de parada) a Call Stack vai empilhar infinitamente a função `recursiva()` até que ela estoure o limite de tamanho. 
+
+Mas qual é esse limite? Eu me fiz essa pergunta e bolei um código simples pra descobrir:
+
+```js
+let maximumCallStackSize = 0
+
+function recursiva() {
+  try {
+    maximumCallStackSize++;
+    recursiva();
+  } catch (e) {
+    console.log(maximumCallStackSize);
+  }
+}
+
+recursiva();
+```
+
+Rodei aqui, rodou ai? Se sim, você vai ver um numero bem quebrado no console, da uma olhada como foi aqui:
+
+![Teste de limite de tamanho da call stack](/uploads/call-stack-size.png)
+
+Aproveitei para rodar tanto no browser (aqui estou usando o Chrome) quanto no NodeJS e tivemos dois resultados diferentes, o NodeJS acabou ganhando por pouco. Se você rodar ai na sua máquina é bem provável que você tenha um resultado diferente do meu, mas o que importa é que o limite existe e apesar de variar entre os ambientes, é bem grande!
+
+## Ta mas onde fica a Call Stack?
+
+A call stack está implementada no motor do JavaScript, que deve ser responsável por compilar e executar o JavaScript. Um dos motores mais famosos é o [V8](https://v8.dev/), que é uma engine escrita em C++ e foi desenvolvida pela Google para ser utilizada no Google Chrome. Por ser open-source o projeto acabou sendo adotado por outros browsers e até mesmo possibilitou a criação do NodeJS.
+
+Hoje o V8 é amplamente utilizado por projetos que precisam de performance, como o próprio NodeJS, o Deno, Couchbase e vários outros. Mas não é só o V8 que existe, temos outros motores como o SpiderMonkey (Firefox), Chakra (Internet Explorer) e o JavaScriptCore (Safari).
+
+## Mas e ai, como rodar um código sem travar a Call Stack?
+
+Naturalmente, o [Event Loop](https://nodejs.org/en/guides/event-loop-timers-and-nexttick) gerencia execução de funções assíncronas como promises, callbacks e eventos, de forma não bloqueante. Vamos falar mais do Event Loop em outro post. Porém, pense numa situação em que temos uma lista enorme e precisamos rodar um for, map ou qualquer outra interação síncrona com essa lista, como no código abaixo:
+
+```js
+const data = await getData(); // retorna uma lista com 100000 itens
+
+const formattedData = data.map(item => {
+  // faz alguma coisa com o item
+  const newItem = formatItem(item);
+  return {
+    ...newItem,
+    formatted: true
+  }
+});
+```
+
+De forma muito rasa, nós poderíamos usufruir do Event Loop e dividir esse `map` em várias chunks (dividir em pedações de 1000 por exemplo), executando cada chunk de forma assíncrona, por exemplo utilizando um setTimeout. Uma outra possibilidade é utilizar um [Web Worker](https://developer.mozilla.org/en-US/docs/Web/API/Web_Workers_API/Using_web_workers) ou um [Worker Thread](https://nodejs.org/api/worker_threads.html#worker_threads_worker_threads) no NodeJS, que são threads que rodam em paralelo com a thread principal, mas isso é assunto pra outro post.
+
+## Conclusão
+
+Galera, espero que tenha consigo explicar de forma bem leve e simples o que é a Call Stack e como ela funciona. Lembrando que esse é o primeiro post de uma série onde vamos conseguir evoluir nosso nível de dev JavaScript, tanto Web quanto NodeJS. Compartilha pra geral e comenta ai **o que mais podemos falar sobre call stack e single-threaded?** Até a próxima!
