@@ -1,0 +1,132 @@
+---
+layout: article
+title: "Uma volta completa no Event Loop pt. 1"
+date: 2024-02-20
+tags:
+  - javascript
+  - web
+  - nodejs
+---
+
+Na busca pela senioridade, é comum que desenvolvedores se deparem com perguntas como "o que acontece quando eu chamo uma função assíncrona?" ou "como o JavaScript consegue ser single-threaded e assíncrono ao mesmo tempo?". A resposta para essas perguntas é o Event Loop, um dos conceitos mais importantes para entender o funcionamento do JavaScript.
+
+## O que é o Event Loop?
+
+De forma muito simplificada, o Event Loop é um mecanismo implementado pelos browsers e pelo Node.js que permite que a gente execute tarefas não bloqueantes. Em meias palavras, o Event Loop consegue gerenciar as tarefas assíncronas (como por exemplo o setTimeout) fora da [Call Stack do JavaScript](/post/call-stack-eo-javascript-single-threaded/), permitindo que o código continue sendo executado enquanto a tarefa assíncrona roda por debaixo dos panos.
+
+> É importante que você entenda a a Call Stack para conseguir observer o conhecimento desse artigo. Você pode ler mais sobre no artigo ["Call Stack e o JavaScript single-threaded"](/post/call-stack-eo-javascript-single-threaded/).
+
+## O que é uma tarefa não bloqueante?
+
+Uma tarefa não bloqueante é uma tarefa que não impede que o código continue sendo executado. Por exemplo, quando você chama um `setTimeout`, o código não fica parado esperando o tempo do timer terminar, porém a maioria das funções são bloqueantes e é isso que vamos tentar enxergar agora! 
+
+Abaixo temos um código HTML que pode mostrar pra gente como seria se tudo fosse síncrono. Crie um arquivo `index.html` e cole o código abaixo:
+
+```html
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Get Sync</title>
+    <script>
+      function runExample() {
+        for (var i = 0; i < 2; i++) {
+          for (var i = 0; i < 10000000000; i++) {
+          }
+        }
+        return { data: "secret"}
+      }
+    </script>
+  </head>
+  <body>
+    <button onclick="runExample()">Rodar função síncrona</button>
+    <hr/>
+    <button onclick="window.alert('caiofuzatto.com.br')">Abrir alert</button>
+    <button onclick="console.log('caiofuzatto.com.br')">Printar log</button>
+  </body>
+</html>
+```
+
+Após abrir o arquivo no navegador, você pode rodar a função síncrona e ver que o navegador vai travar até que a função termine de ser executada. Você pode perceber que o navegador travou, clicando nos outros botões de alerta e log e vai perceber que elas só vão ser executadas após "destravar", ou seja, quando a função síncrona terminar.
+
+### Outro exemplo de bloqueio na Call Stack
+
+> Caio, estou com preguiça e quero um exemplo mais fácil!
+
+Ta na mão meu chapa! Deixei mais um exemplo abaixo em que você pode rodar no seu DevTools ou no console do NodeJS. Cole o código abaixo em um console de sua preferência:
+
+```javascript
+function runExample() {
+  console.time("tempo de execução")
+  setTimeout(() => {
+    console.timeEnd("tempo de execução")
+  }, 100)
+  for (var i = 0; i < 2; i++) {
+    for (var i = 0; i < 10000000000; i++) {
+    }
+  }
+}
+```
+
+Esse é mais interessante ainda! Rode a função `runExample()` e você você terá esse resultado:
+
+![Print da execução do código acima no DevTools](/uploads/event-loop-lag.png)
+
+O resultado é bem intrigante! Mesmo a gente "setando" apenas 100ms para o setTimeout, o callback só foi executado após `8516.929931640625ms`. Esse evento é o que chamamos de *Event Loop Lag*.
+
+> Callback: Nada mais é do que uma função que é passada como parâmetro para ser executada. Como exemplos temos o setTimeout e Promises que recebem callbacks por padrão.
+
+## Principais etapas do Event Loop
+
+O Event Loop é composto por algumas etapas que são executadas em um ciclo infinito. Cada ciclo do Event Loop é chamado de tick.
+
+Uma tick inicia quando a Call Stack está vazia e pausa quando a Call Stack está ocupada. Quando não existe mais tarefas para o Event Loop enviar para a Call Stack, o ciclo entra em modo ocioso.
+
+### Task queue
+
+A Task Queue (também chamada de Macrotask queue ou callback queue), é uma fila de callbacks de outras funções. Por exemplo quando você clica em um botão e um evento é disparado, o callback desse evento vai para a Task queue.
+
+Bora ver a Task queue em ação? Cole o código abaixo no seu console favorito
+
+```javascript
+setTimeout(() => {
+  console.log('log do setTimeout');
+}, 0);
+
+console.log('log na raiz');
+```
+
+Se você rodar esse código, você vai perceber que o `log na raiz` sera impresso antes do `log do setTimeout`:
+
+![Exemplo de task queue](/uploads/event-loop-task-queue.png)
+
+Isso acontece por que o `setTimeout` mesmo com o delay de 0ms acaba retornando um callback - que vimos anteriormente que é uma task - por isso ele vai para a Task queue, enquanto o `console.log` que está na raiz do código é executado imediatamente na Call Stack.
+
+### Microtask queue
+
+A Microtask queue (também chamada de Job queue) é uma fila de bem semelhante a Task queue, porém ela foi desenvolvida para executar as Promises, assim o callback das Promises é executado o mais rápido possível. 
+
+Bora ver na prática? Abaixo temos um código que pode nos ajudar a perceber a Microtask queue em ação:
+
+```javascript
+setTimeout(() => {
+  console.log('log do setTimeout');
+}, 0);
+
+Promise.resolve('log da cadeia de promises').then((message) =>
+  Promise.resolve(message).then((message) => 
+    Promise.resolve(message).then((message) => console.log(message))
+  )
+);
+
+console.log('log na raiz');
+```
+
+Se você rodar esse código, você vai perceber que a ordem de execução dos logs será bem diferente do que foi "codado":
+
+![Exemplo de Microtask queue](/uploads/event-loop-microtask-queue.png)
+
+Isso acontece por que a Microtask queue tem prioridade e executa todas as Promises na fila antes do próximo ciclo do Event Loop. Mesmo que uma Promise chame outra Promise, o Event Loop só vai continuar quando a Microtask queue estiver vazia.
+
+## Continua...
+
+Esse artigo foi dividido em duas partes, então se você gostou do que leu até aqui, fique ligado que em breve vou lançar a segunda parte desse artigo. 
