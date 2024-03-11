@@ -1,0 +1,125 @@
+---
+layout: article
+title: "Uma volta completa no Event Loop pt. 2"
+date: 2024-03-11
+tags:
+  - javascript
+  - web
+  - nodejs
+---
+
+Continuando o papo sobre o Event Loop, agora quero dar enfase nas especifidades da implementação dele nos browsers e no Node.js.
+
+> [Na primeira parte desse artigo](/posts/uma-volta-completa-no-event-loop-pt-1), falei sobre o que é o Event Loop e como ele funciona de forma prática e com muitos exemplos.
+
+## O Event Loop nos browsers
+
+E nesse primeiro tópico vamos abordar como ele funciona nos browsers, [segundo a especificação do WHATWG](https://html.spec.whatwg.org/multipage/webappapis.html#event-loops). Abaixo temos um desenho de como seria o Event Loop nos browsers:
+
+![Event Loop nos browsers](/uploads/event-loop-web.png)
+
+> [WHATWG](https://html.spec.whatwg.org/) é um grupo de trabalho que mantém e desenvolve a especificação do HTML, DOM e APIs relacionadas.
+
+### Web APIs
+
+As Web APIs são - como o nome sugere - apis que os browsers disponibilizam para a gente. Ela não faz parte do JavaScript e nem sequer é especificada pela ECMAScript. Por se tratar de uma implementação, essas APIs podem variar de browser para browser.
+
+Essas APIs possibilitam o acesso a dados do navegador ou do ambiente de execução, como por exemplo a Geolocation API que utiliza por debaixo dos panos código C++ para acessar o GPS do seu dispositivo, além da Fetch API que nos utilizamos constantemente para fazer requisições HTTP e muitas outras.
+
+### Rendering pipeline
+
+Essa etapa é a que o browser calcula o estilo, a posição e o tamanho de cada elemento da página. Após isso, o browser desenha os pixels na tela e junta todas as camadas e desenha na tela.
+
+[+ What is executed inside the render queue? | Nik's Blog](https://blog.xnim.me/event-loop-and-render-queue)
+
+Essa fila tem uma propriedade interessante pois ela assim como a Microtask queue executa todas as tarefas presentes na fila antes do próximo ciclo. Porém, se uma nova tarefa aparecer durante a execução da fila, ela é adicionada no final da fila e só será executada no próximo ciclo.
+
+Além disso, essa etapa é composta por várias sub-etapas:
+
+![Etapas do rendering pipeline aparecendo em ordem](/uploads/event-loop-rendering-pipeline.png)
+
+1. **Request Animation Frame (RAF)**: É uma API que permite que você execute uma função antes da próxima renderização. Ela é muito utilizada para fazer animações e jogos.
+2. **Style calculation**: Calcula o estilo de cada elemento da página.
+3. **Layout**: Calcula a posição e o tamanho de cada elemento da página.
+4. **Paint**: Posiciona os pixels na tela.
+5. **Composite**: Junta todas as camadas e desenha na tela.
+
+#### requestAnimationFrame
+
+A função `requestAnimationFrame` é uma API que permite que você execute uma função antes da próxima renderização. Ela é muito utilizada para fazer animações e jogos. 
+
+O exemplo abaixo mostra como você pode utilizar a função `requestAnimationFrame` para calcular o tempo entre cada renderização. Rode ele no console do seu navegador e verá que o tempo entre cada renderização é por volta de **16.66ms (60fps)**.
+
+```javascript
+function checkRequestAnimationDiff() {
+    let prev;
+    function call() {
+        requestAnimationFrame((timestamp) => {
+            if (prev) {
+                console.log(timestamp - prev); 
+            }
+            prev = timestamp;
+            call();
+        });
+    }
+    call();
+}
+checkRequestAnimationDiff();
+```
+
+Assim você pode utilizar esse callback para fazer animações, aproveitando o tempo entre cada renderização.
+
+## O Event Loop no Node.js
+
+O Event Loop no Node.js é um pouco diferente do que no browser, a ideia e o funcionamento são os mesmos. O rendering pipeline por exemplo não existe, já as WEB APIs são substituídas por APIs do próprio Node.js. Abaixo temos um desenho de como seria o Event Loop no Node.js:
+
+![Event Loop no Node.js](/uploads/event-loop-nodejs.png)
+
+Como podemos ver, o Event Loop no Node.js acaba tendo umas filas com nomes diferentes, mas a ideia é a mesma. Vamos ver como ele funciona na prática.
+
+- Timers: Aqui são executadas os callbacks que foram passados para o `setTimeout()` e `setInterval()`.
+- I/O callbacks: Aqui são executadas os callbacks de operações de I/O, como por exemplo a leitura de um arquivo.
+- Poll: Aqui são executadas as operações de I/O que foram finalizadas.
+- Check: Aqui são executadas os callbacks passados para o `setImmediate()`.
+
+### Event Loop web x Event Loop Node.js
+
+A grande diferença entre as implementações do browser e do Node.js é que o Node.js usa uma thread pool para executar operações pesadas de I/O, deixando o Event Loop livre para executar outras tarefas. Isso melhora muito o desempenho e escalabilidade dos sistemas Node.js, especialmente em aplicações que fazem muitas requisições de I/O.
+
+### setImmediate x process.nextTick
+
+Um fato engraçado é que o `setImmediate()` não é tão imediato assim. Ele é executado após o término do Event Loop, ou seja, no final de cada tick.
+
+Já o `process.nextTick()` é executado no inicio e a cada fase do event loop. Ou seja, todos os callbacks passados para o `process.nextTick()` são executados antes que o Event Loop continue. Bora ver na prática? Cole o código abaixo na sua aplicação Node.js:
+
+```javascript
+function test() {
+    setImmediate(() => console.log('Vou rodar imediatamente!'))
+    process.nextTick(() => console.log('Rodei antes parça...'))
+}
+test()
+```
+
+Se você olhar apenas o código deve imaginar que o `setImmediate()` será executado primeiro. Porém como vimos acima, o `process.nextTick()` tem alta prioridade no Event Loop e será executado antes.
+
+![Print do console mostrando a ordem de execução dos callbacks](/uploads/event-loop-setimmediate-nexttick.png)
+
+É importante tomar cuidado com o `process.nextTick()` pois ele pode travar a aplicação caso seja utilizado de forma errada. Por exemplo, se você fizer uma chamada recursiva usando ele a aplicação não irá mais fazer nada além de executar essas chamadas até que ela termine.
+
+## Event Loop Playground
+
+Existem duas ferramentas fantásticas para visualizar o Event Loop em ação. A primeira é o [JavaScript Visualizer 9000](https://www.jsv9000.app/) que mostra tanto a Task queue quanto a Microtask queue.
+
+![Print da tela do JSV9000, mostrando as fases do event loop](/uploads/event-loop-jsv9000.png)
+
+A segunda é o [Loupe](http://latentflip.com/loupe/) que não mostra a Microtask queue mas permite usar eventos do DOM. Essa ferramenta foi criada pelo Philip Roberts que tem uma talk muito bacana sobre o assunto: [What the heck is the Event Loop anyway? | Philip Roberts | JSConf EU](https://youtu.be/8aGhZQkoFbQ?si=miXjwHmYX3ArcF1J).
+
+![Print da tela do Loupe, mostrando as fases do event loop](/uploads/event-loop-loupe.png)
+
+Aproveite essas ferramentas para entender melhor o Event Loop e como ele funciona.
+
+[+ Uma volta completa no Event Loop pt. 1](/post/uma-volta-completa-no-event-loop-pt-1)
+
+## Conclusão
+
+Nesse segundo artigo sobre o Event Loop, vimos como ele funciona nos browsers e no Node.js. Além disso, vimos como o `requestAnimationFrame` é utilizado para fazer animações e jogos e como o `setImmediate()` e o `process.nextTick()` se comportam no Node.js. Espero que ajude vocês a entenderem melhor como o JavaScript funciona por debaixo dos panos. Nos vemos na proxima! :)
