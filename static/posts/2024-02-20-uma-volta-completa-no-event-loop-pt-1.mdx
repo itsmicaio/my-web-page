@@ -10,6 +10,8 @@ tags:
 
 Na busca pela senioridade, é comum que desenvolvedores se deparem com perguntas como "o que acontece quando eu chamo uma função assíncrona?" ou "como o JavaScript consegue ser single-threaded e assíncrono ao mesmo tempo?". A resposta para essas perguntas é o Event Loop, um dos conceitos mais importantes para entender o funcionamento do JavaScript.
 
+[+ Uma volta completa no Event Loop pt. 2](/post/uma-volta-completa-no-event-loop-pt-2/)
+
 ## O que é o Event Loop?
 
 De forma muito simplificada, o Event Loop é um mecanismo implementado pelos browsers e pelo Node.js que permite que a gente execute tarefas não bloqueantes. Em meias palavras, o Event Loop consegue gerenciar as tarefas assíncronas (como por exemplo o setTimeout) fora da [Call Stack do JavaScript](/post/call-stack-eo-javascript-single-threaded/), permitindo que o código continue sendo executado enquanto a tarefa assíncrona roda por debaixo dos panos.
@@ -127,6 +129,8 @@ Se você rodar esse código, você vai perceber que a ordem de execução dos lo
 
 Isso acontece por que a Microtask queue tem prioridade e executa todas as Promises na fila antes do próximo ciclo do Event Loop. Mesmo que uma Promise chame outra Promise, o Event Loop só vai continuar quando a Microtask queue estiver vazia.
 
-## Continua...
+[+ Uma volta completa no Event Loop pt. 2](/post/uma-volta-completa-no-event-loop-pt-2/)
 
-Esse artigo foi dividido em duas partes, então se você gostou do que leu até aqui, fique ligado que em breve vou lançar a segunda parte desse artigo. 
+## Conclusão
+
+Nesse artigo vimos o que é o Event Loop e como ele funciona, além de ver na prática como a Task queue e a Microtask queue funcionam. No próximo artigo vamos ver como o Event Loop lida com as tarefas assíncronas e como ele consegue ser single-threaded e assíncrono ao mesmo tempo.
