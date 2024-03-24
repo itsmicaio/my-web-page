@@ -1,0 +1,67 @@
+---
+layout: article
+title: "Testes automatizados e aplicações confiáveis"
+date: 2024-03-24
+tags:
+  - tech
+---
+
+Você sente aquele friozinho na barriga todo deploy que você faz? Ou então, você já teve que correr para arrumar um bug em prod que você mesmo gerou no ultimo deploy? Bom, provavelmente você precisa aumentar o nível de confiabilidade do seu sistema. Por isso hoje vamos falar sobre testes automatizados e como eles podem te ajudar a ter aplicações mais confiáveis.
+
+> A ideia desse post é falar de forma mais teórica sobre testes, sem abordar ferramentas ou linguagens específicas.
+
+## Testes automatizados
+
+Testes automatizados são testes que são executados automaticamente por uma ferramenta, sem a necessidade de intervenção humana. Boa parte das aplicações modernas possuem testes automatizados, e é muito comum que esse tema seja abordado em entrevistas.
+
+Existem uma infinidade de maneiras de fazer testes automatizados, muitas delas utilizadas por times de QA, como testes de carga, testes de performance, testes de segurança, testes de acessibilidade, entre outros. Hoje a ideia é focar nos testes que nós devs precisamos escrever.
+
+### Testes unitários
+
+Esses são os testes mais simples que você pode escrever. Eles são utilizados para testar uma função, ou seja, um input e um output. São muito úteis para garantir que uma função está fazendo o processamento correto dos dados, mas por se tratar de um teste isolado, ele não garante que a função está se comunicando corretamente com outras partes do sistema.
+
+### Testes de integração
+
+Já os testes de integração, tem o objetivo de testar uma ação do sistema, por exemplo, testar a chamada de um endpoint de uma API e verificar se o retorno estará correto. Acaba sendo muito mais difícil de escrever pois envolve mais partes do sistema, além de partes externas como banco de dados, filas e outros serviços, mas traz muito mais confiabilidade para o sistema frente ao teste unitário.
+
+### Testes end-to-end (E2E)
+
+Testes E2E são testes que simulam a interação de um usuário com o sistema. Eles são muito úteis para garantir que o sistema está funcionando corretamente de ponta a ponta. Por exemplo, além de bater na API e verificar o retorno, também verifica se o registro foi criado, numa rota de listagem por exemplo. Por serem testes mais robustos, acabam sendo mais lentos e mais difíceis de escrever, mas trazem muita confiabilidade para o sistema.
+
+## Estratégias de composição de testes
+
+Agora que vimos os tipos de testes, entendemos um pouco sobre o custo (tempo de escrita, tempo de execução) e os benefícios que cada um traz pro sistema, como decidir qual tipo de teste escrever? e em qual quantidade? Como um _senior_ diria, depende.
+
+Existem algumas estratégias que podem te ajudar a decidir quais tipos de teste escrever e em qual quantidade. Vamos ver algumas delas.
+
+### Pirâmide de testes
+
+[Proposta por Martin Fowler, a pirâmide de testes](https://martinfowler.com/bliki/TestPyramid.html) é uma estratégia que sugere que você escreva mais testes unitários, menos testes de integração e ainda menos testes E2E. Isso porque testes unitários são mais rápidos de escrever e de executar, e testes E2E são mais lentos e mais difíceis de escrever.
+
+![Representação da pirâmide de testes, com testes unitários na base, testes de integração no meio e testes E2E no topo](/uploads/test-pyramid-martin-fowler.png)
+
+Essa foi a estratégia pioneira, porém, não é tão utilizada hoje em dia, sendo mais considerada em APIs, onde a quantidade de processamento de dados (input x output) é maior e a quantidade de testes unitários é mais relevante.
+
+### Troféu de testes
+
+Olhando por uma ótica mais de front-end, [Kent C. Dodds propôs o troféu de testes](https://kentcdodds.com/blog/the-testing-trophy-and-testing-classifications), que sugere que você escreva menos testes unitários, por exemplo em um projeto React, testando os hooks ao invés de todos os componentes, e mais testes de integração, batendo em rotas e verificando a composição da página. Utilizando os testes E2E apenas para fluxos mais utilizados e críticos do projeto.
+
+![Representação do troféu de testes, sendo os testes static a base do troféu, seguido por testes unitários, testes de integração e testes E2E](/uploads/test-trophy-kent-dodds.png)
+
+Essa representação traz o conceito de teste estático (static), que nada mais nada menos são as validações de tipagem, linters, formatação de código, etc. Como são feitos automaticamente por ferramentas, são indispensáveis e presentes em toda a aplicação.
+
+### Testes honeycomb
+
+Pensando em microsserviços, o [André Schaffer do time de engenharia do Spotify trouxe o modelo honeycomb](https://engineering.atspotify.com/2018/01/testing-of-microservices/). Esse modelo se assemelha bastante com a parte de cima do troféu, sugerindo que devemos nos concentrar nos testes de integração, ter alguns testes de detalhes de implementação e ainda menos testes integrados.
+
+![Representação do modelo honeycomb, com testes unitários, testes de integração e testes E2E em um hexágono](/uploads/test-honeycomb-spotify.png)
+
+Você deve estar se perguntando o que são os testes integrados ("integrated") e de detalhe de implementação ("implementation detail"), certo? Vamos lá:
+- Integrated: são testes que devem passar ou falhar de acordo com o funcionamento de outro(s) sistema(s), sendo semelhante a um teste E2E.
+- Implementation Detail: esse conceito enxerga o microsserviço sendo uma unidade, portanto os testes de detalhe de implementação são testes mais isolados do microsserviço.
+
+## Conclusão
+
+Testes automatizados são uma prática muito importante para garantir a confiabilidade do seu sistema. Vimos os tipos diferentes que existem, vários modelos de composição de testes e como eles podem te ajudar a ter aplicações mais confiáveis. 
+
+Ainda que existam várias estratégias, cada time tem sua própria dor e deve avaliar qual a necessidade do projeto e aplicar. Beleza galera? Até a próxima!
