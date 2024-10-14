@@ -40,6 +40,9 @@ const ListTags = ({ tags, maxTags }: IProps) => {
     },
     react: {
       name: "React",
+    },
+    ia: {
+      name: "IA",
     }
   };
 

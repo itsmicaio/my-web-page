@@ -1,0 +1,60 @@
+---
+layout: article
+title: "Introdução ao Amazon Bedrock"
+date: 2024-10-14
+tags:
+  - aws
+  - ia
+---
+
+Fala galera, novamente estou aqui para trazer o meu resumo pessoal de um curso gratuito que eu estou fazendo na AWS SkillBuilder. Dessa vez, o curso é sobre o Amazon Bedrock, uma plataforma de IA que a AWS lançou recentemente.
+
+> Se interessou pelo curso? a AWS oferece ele gratuitamente no portal de cursos SkillBuilder, e o curso está disponível em várias linguas: [Introdução ao Amazon Bedrock](https://explore.skillbuilder.aws/learn/course/internal/view/elearning/17807/Introdu%C3%A7%C3%A3o-ao-Amazon-Bedrock-Portugu%C3%AAs-%7C-Amazon-Bedrock-Getting-Started-Portuguese-)
+
+Além de falar especificamente sobre Bedrock, a ideia aqui é desmitificar alguns conceitos de IA. Bora lá?
+
+## O que é o Amazon Bedrock?
+
+O Amazon Bedrock é um serviço auto gerenciado, que oferece uma gama de foundation models disponíveis no mercado, além de um conjunto de recursos que permite você dimensionar e criar rapidamente aplicações de inteligencia artificial generativa (genAI).
+
+> *Foundation models ou FMs* são modelos de IA que são treinados em uma grande quantidade de dados e são capazes de gerar texto, imagens, áudio e outros tipos de dados.
+
+## Principais características
+
+A grande proposta do Amazon Bedrock é oferecer uma plataforma de IA que seja fácil de usar, escalável e segura. Para isso, o Bedrock oferece uma série de recursos que facilitam o desenvolvimento de aplicações de IA.
+
+### Foundation models
+
+Você pode escolher entre uma variedade de foundation models, desde *modelos de terceiros* (sujeitos a preços e regulações) como AI21 Labs, Anthropic, Cohere, Meta, Mistral AI, e Stability AI até *modelos feitos pela AWS* como as famílias de FMs Amazon Titan, Jurassic, Claude, Command, Embed, Llama, Mistral, and Stable Diffusion. Esses FMs suportam várias modalidades, incluindo texto, imagem, áudio, e multimodal.
+
+> *Multimodal* é um modelo que suporta mais de uma modalidade, como texto e imagem.
+
+### Customização de FMs
+
+Conseguir treinar um modelo de IA do zero é uma tarefa muito complexa e cara. Por isso, o Bedrock oferece algumas possibilidades de customização da base das FMs, assim você pode deixar o modelo mais específico para a sua aplicação. Duas dessas técnicas são:
+
+-  *Retrieval and Generation (RAG)*: permite que você faça uma busca em um grande conjunto de dados e gere uma resposta baseada nesses dados.
+
+- *Fine-tuning*: permite que você treine um modelo com seus próprios dados, para que ele possa gerar respostas mais específicas.
+
+No geral, Fine-tuning é mais útil para especializar um modelo em uma tarefa, enquanto RAG é vantajoso quando se precisa de informações dinâmicas e atualizadas, integrando-as ao processo de geração de texto.
+
+## Segurança e privacidade
+
+Um dos grandes problemas que temos com IA atualmente é o potencial risco de segurança da informação. Em modelos mais abertos como o GPT, é muito difícil ter certeza de que o dados inputado não sera utilizado para treinar o modelo, e até mesmo para gerar respostas para outros usuário, causando uma exposição do dado da empresa (ou pessoal). Pensando nisso, o Bedrock implementa algumas soluções que visam garantir a segurança e privacidade dos dados.
+
+### Dados privados
+
+Sempre que você treinar um modelo base (FM) disponível no Bedrock, uma nova cópia do modelo é gerada, de forma privada, na sua conta. Isso significa que você não compartilha dados com outros usuários e bots, o que geralmente acontece quando você usa uma api aberta e compartilhada.
+
+### Guardrails
+
+Para evitar usuários "espertinhos", o Bedrock oferece guardrails que adicionam uma camada de verificação tanto do input do usuário, quanto do output do modelo. 
+
+Com isso você pode garantir que seu "bot" não vai sair por aí falando besteira ou ofendendo alguém e também impedir que o usuário tente burlar o sistema.
+
+## Conclusão
+
+A AWS entrou na corrida pela IA fazendo um produto que é voltado para negócios. Com o AWS Bedrock ficou muito mais simples e seguro criar uma inteligência artificial que tem os dados da sua empresa e consegue gerar respostas mais específicas e seguras.
+
+Espero que tenham gostado do resumo, e se tiverem alguma dúvida ou sugestão, deixem nos comentários. Até a próxima!
