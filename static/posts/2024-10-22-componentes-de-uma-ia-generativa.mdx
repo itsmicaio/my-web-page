@@ -1,0 +1,74 @@
+---
+layout: article
+title: "Componentes de uma IA generativa"
+date: 2024-10-22
+tags:
+  - aws
+  - ia
+---
+
+Fala galera, hoje lhes trago mais um resumão daqueles, dessa vez quero falar sobre os componentes que fazem parte de uma IA generativa. Vamos lá?
+
+> Esse resumo foi feito com base no curso gratuito da AWS SkillBuilder: [Criar aplicações de IA generativa usando Amazon Bedrock](https://explore.skillbuilder.aws/learn/course/internal/view/elearning/19347/Criar-aplica%C3%A7%C3%B5es-de-IA-generativa-usando-Amazon-Bedrock-Portugu%C3%AAs-%7C-Building-Generative-AI-Applications-Using-Amazon-Bedrock-Portuguese-).
+
+Nesse artigo vou focar nas partes que fazem uma IA funcionar, desde o treinamento até a entrega da resposta. Vamos lá?
+
+## Parâmetros de inferência
+
+Além de escrever um bom prompt, usar parâmetros de inferência efetivos pode influenciar bastante a qualidade das respostas geradas pelo seu modelo. Vamos entender quais são e para que servem esses parâmetros:
+
+### Top P ou nucleus sampling
+
+Faz um corte das possibilidades de palavras com base em probabilidade cumulativa. Um valor alto para o Top P como 1, significa que a resposta será gerada com base em um numero grande de tokens, aumento a diversidade da resposta, mas também aumentando a chance de gerar respostas sem sentido.
+
+> **Probabilidade cumulativa**: é calculada pela função de distribuição acumulada (FDA), que determina a probabilidade de uma observação aleatória ser menor ou igual a um valor específico.
+
+### Top K
+
+Esse parâmetro é utilizado para delimitar a quantidade de palavras pelas K mais prováveis de serem "as próximas". Geralmente esse parâmetro fica entre 10 e 100. Um valor K configurado como 1 é chamada de umas estratégia "greedy" ou gananciosa em português, e significa que o modelo sempre vai escolher a palavra mais provável.
+
+### Temperatura
+
+É um parâmetro que controla a aleatoriedade da amostragem. Um valor baixo de temperatura como 0.1, faz com que o modelo escolha sempre a palavra mais provável, enquanto um valor alto como 1.0, faz com que o modelo escolha palavras menos prováveis, aumentando a diversidade da resposta e a chance de gerar respostas sem sentido.
+
+### Length
+
+Foundation models normalmente aceitam alguns parâmetros para controlar o tamanho da resposta 
+gerada. Bora ver quais são:
+
+- **Response length**: define a contagem minima e máxima de tokens que a resposta deve ter.
+
+- **Length penalty**: encoraja o modelo a gerar respostas mais longas, penalizando respostas curtas.
+
+- **Stop sequences**: define uma lista de tokens que, quando gerados, indicam que a resposta está completa. É usado para encerramento antecipado da resposta.
+
+
+## Dados personalizados
+
+Apenas gerar respostas com base em um modelo pré-treinado pode não ser suficiente para a sua aplicação, você vai precisar de munir a IA com informações internas do seu caso de uso.
+
+Todas essas informações "extras" são passadas para o modelo como um token e são vetorizadas, esse processo, chamado de Vector embeddings é normalmente feito pelo próprio modelo de ML.
+
+> **Vector embeddings**: Esse é o processo pelo qual texto, imagens e áudio são convertidos em uma representação numérica em um espaço vetorial.
+
+Na prática, tudo é um calculo de probabilidade. Qual resposta é mais usada baseada na pergunta do usuário? qual a chance de uma palavra ser a próxima? E assim a resposta vai sendo construída, em tempo real.
+
+### Vector databases
+
+A função principal de um banco de dados vetorial é armazenar de forma compacta bilhões de vetores de alta dimensão, que representam palavras e entidades. Esses bancos fornecem uma pesquisa ultra rápida entre esses bilhões de dados de vetor em tempo real, usando algoritmos famosos como o "k-nearest neighbors" (k-NN) ou "cosine similarity".
+
+- **k-NN**: é um algoritmo de aprendizado supervisionado que pode ser usado para classificação ou regressão. Ele é baseado na ideia de que objetos similares devem estar próximos uns dos outros.
+
+- **Cosine similarity**: é uma medida de similaridade entre dois vetores de um espaço vetorial que mede o cosseno do ângulo entre eles.
+
+## Armazenamento de histórico
+
+A armazenamento de memória é uma parte essencial de aplicações de IA, especialmente para casos de uso de chatbots. Mas onde isso fica? 
+
+Normalmente, o histórico de conversas é armazenado em um banco de dados, que pode ser um banco de dados relacional, um banco de dados NoSQL, ou até mesmo um banco de dados de gráficos. Esse processo é feito fora do seu FM, e é responsabilidade do seu aplicativo, e o Amazon Bedrock oferece um serviço a parte para isso.
+
+## Conclusão
+
+Vimos que uma IA generativa é muito mais do que um modelo de IA treinado que responde perguntas de forma automática. Para isso, é  necessário configurar bem o modelo até que ele fique personalizado para o seu caso de uso, e isso envolve desde a configuração dos parâmetros de inferência até o armazenamento de histórico de conversas.
+
+Espero que tenham gostado do resumo, e se tiverem alguma dúvida ou sugestão, deixem nos comentários. Ah, e se você estiver animado no assunto, da uma olhada no último post da série [Introdução ao Amazon Bedrock](/post/introducao-ao-amazon-bedrock/). Até a próxima!
