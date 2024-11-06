@@ -1,0 +1,107 @@
+---
+layout: article
+title: "Tunando sua IA LLM com LangChain"
+date: 2024-11-06
+tags:
+  - aws
+  - ia
+---
+
+Fala galera, seguindo na série de resumos dos meus estudos de IA, hoje vamos falar de LangChain.
+
+## O que é o LangChain?
+
+O LangChain é um framework de código aberto, atualmente disponível em Python, JavaScript e TypeScript, que facilita o desenvolvimento de aplicações de LLM (Large Language Models). Ele simplifica cada fase do processo de desenvolvimento, fornecendo uma série de funcionalidades que te ajudam a sair do zero de forma mais rápida.
+
+Por exemplo, LLMs não salvam o estado entre as requisições, então a aplicação precisa gerenciar todo contexto. Outro exemplo mais complexo é quando o problema é muito grande para ser resolvido em uma única requisição, então é necessário dividir o problema em partes menores e resolver cada parte separadamente. O LangChain já vem preparado para te ajudar a enfrentar esses desafios, com vários componentes que você pode usar para desenvolver a solução.
+
+## Integrações
+
+O framework suporta integrações com vários outras bibliotecas e serviços, como os da AWS, OpenIA, Anthropic e [muitos outros que você pode ver na documentação do LangChain](https://python.langchain.com/v0.2/docs/integrations/platforms/). 
+
+Além de integrações com fornecedores de FMs (foundation models), também existem várias outras que vão ajudar no processo de construção da sua aplicação, como chat models, document loaders, vector stores, entre vários outros recursos que vão facilitar sua vida na hora de desenvolver.
+
+## Classes abstratas
+
+Para garantir a compatibilidade entre diferentes fornecedores e APIs, o LangChain trabalha com classes abstratas que definem os métodos que devem ser implementados. Isso facilita a troca de fornecedores, caso você precise mudar de um fornecedor para outro.
+
+Por exemplo, veja esse trecho de código:
+
+```python
+import boto3
+from langchain_aws import BedrockLLM
+bedrock_client = boto3.client('bedrock-runtime',region_name="us-east-1")
+inference_modifiers = {"temperature": 0.3, "maxTokenCount": 512}
+llm = BedrockLLM(
+    client = bedrock_client,
+    model_id="amazon.titan-tg1-large",
+    model_kwargs =inference_modifiers
+    streaming=True,
+)
+response = llm.invoke("Qual é o município que mais alaga no ES?")
+```
+
+A classe `BedrockLLM` é uma implementação da classe abstrata `LLM` que define os métodos que devem ser implementados. Isso facilita a troca de fornecedores, pois basta trocar a implementação da classe abstrata para mudar de fornecedor.
+
+## Prompt templates
+
+O prompt é a instrução que você fornece ao modelo para que ele gere a resposta adequada. Quando trabalhamos em aplicações de LLM, é comum que o prompt seja uma composição de várias partes, como a pergunta do usuário, informações adicionais e até mesmo dados personalizados. 
+
+Para facilitar a criação e reutilização dos prompts, você pode criar um template do seu prompt com LangChain, e reutilizado em várias partes da sua aplicação, passando variáveis pré definidas para o template, compondo o prompt de forma dinâmica. Veja só como é simples e fácil:
+
+```python
+from langchain import PromptTemplate
+
+# Cria um template de prompt com múltiplas variáveis de entrada
+meu_prompt_bolado = PromptTemplate(
+  input_variables=["nomeCliente", "feedbackDoCliente"],
+  template="""
+  Humano: Crie um e-mail para {nomeCliente} em resposta ao seguinte feedback de atendimento ao cliente que foi recebido:
+  <feedback_cliente>
+      {feedbackDoCliente}
+  </feedback_cliente>
+  Assistente:"""
+)
+
+# Passa valores para as variáveis de entrada
+prompt = meu_prompt_bolado.format(
+  nomeCliente="Maria Silva",
+  feedbackDoCliente="""Olá EmpresaX,
+  Fiquei muito satisfeita com a experiência recente que tive ao ligar para o suporte ao cliente.
+  Fui atendida rapidamente, e o representante foi muito eficiente em resolver o problema.
+  Estamos muito felizes com a resposta recebida e consideraremos recomendar para outras empresas aqui em Vitória/ES.
+  """
+)
+```
+
+## Trabalhando com dados
+
+Para facilitar o trabalho na hora de fazer um RAG ou um fine tuning, o LangChain oferece uma série de classes e métodos que te ajudam a trabalhar com os dados de forma mais eficiente.
+
+- [Document Loaders](https://python.langchain.com/docs/how_to/#document-loaders): Carregam documentos como HTML, PDF e código de diferentes fontes, como um bucket S3, uma URL ou até mesmo um arquivo local.
+- [Retrievers](https://python.langchain.com/docs/how_to/#retrievers): Buscam documentos relevantes de várias fontes diferentes, baseado na consulta e combinam com o contexto da conversa.
+- [Vector stores](https://python.langchain.com/docs/how_to/#vector-stores): Armazenam e recuperam informações de uma vector store, de vários provedores como Amazon OpenSearch Serverless ou até a extensão pgvector, para cálculos de similaridade com o prompt do usuário.
+
+```python
+from langchain.document_loaders import S3FileLoader
+from langchain_aws.retrievers import AmazonKendraRetriever
+from langchain_community.vectorstores import OpenSearchVectorSearch
+```
+
+## Chains
+
+Muitas vezes, o problema que você está tentando resolver é muito grande para ser resolvido em uma única requisição. Nesses casos, é necessário dividir o problema em partes menores e resolver cada parte separadamente. Com o LangChain, você pode construir uma cadeia de processamento, onde cada parte do problema é resolvida por um componente diferente.
+
+Por exemplo, você pode estar construindo uma aplicação que gera respostas de emails, nesse caso você vai precisar tanto o corpo da mensagem quanto o título, e cada parte pode ser resolvida por um componente diferente. 
+
+### LCEL (LangChain Expression Language)
+
+O [LangChain Expression Language (LCEL)](https://python.langchain.com/v0.1/docs/expression_language/) é uma linguagem declarativa que facilita a composição de cadeias (chains) de forma otimizada e pronta para produção, desde cadeias simples até as mais complexas, com centenas de etapas. 
+
+LCEL oferece suporte a streaming para resposta rápida, execução assíncrona e paralela, além de retries e fallbacks configuráveis para maior confiabilidade. Também é possível acessar resultados intermediários, validar entradas e saídas com esquemas [Pydantic](https://docs.pydantic.dev/latest/) e [JSONSchema](https://json-schema.org/specification), e acompanhar cada etapa com o LangSmith para depuração.
+
+## Conclusão
+
+O LangChain é uma ferramenta poderosa que vai te ajudar a desenvolver aplicações de LLM de forma mais rápida e eficiente. Com ele, você pode integrar facilmente com vários fornecedores de FMs, criar templates de prompts, trabalhar com dados de forma mais eficiente, e construir cadeias de processamento para resolver problemas complexos. 
+
+Se você está desenvolvendo aplicações de LLM, não deixe de conferir o último post dessa série sobre genAI, onde falo sobre os [componentes de uma IA generativa](/post/componentes-de-uma-ia-generativa). Até a próxima! 
