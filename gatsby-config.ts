@@ -59,6 +59,15 @@ const config: GatsbyConfig = {
       options: {
         trackingIds: ["G-FE4HS11JXL"],
       }
+    },
+    {
+      resolve: `gatsby-plugin-satorare`,
+      options: {
+        path: `${__dirname}/src/templates/thumbnail.tsx`,
+        width: 1200,
+        height: 630,
+        target_nodes: ['Mdx']
+      }
     }
   ],
 };
